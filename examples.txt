@@ -1,0 +1,11 @@
+
+Run naive on example.txt
+    python multilayer_core_decomposition.py example  n --ver
+
+Run BFS on example.txt
+    python multilayer_core_decomposition.py example  bfs --ver
+
+
+
+Influence measure v2 on example graph
+python influence_measure.py example  v2  --ver
