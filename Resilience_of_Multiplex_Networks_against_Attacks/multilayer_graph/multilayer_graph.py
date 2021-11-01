@@ -31,7 +31,7 @@ class MultilayerGraph:
 
     def load_dataset(self, dataset_path):
         # open the file
-        dataset_file = open(dirname(getcwd()) + '/datasets/' + dataset_path + '.txt')
+        dataset_file = open(dirname(getcwd()) + '/datasets/multilayer_layer_core_decomposition/' + dataset_path + '.txt')
 
         # read the first line of the file
         first_line = dataset_file.readline()

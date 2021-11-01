@@ -1,14 +1,11 @@
 from collections import defaultdict
 from array import array
-
 from subroutines.core import core
 from subroutines.commons import *
 from utilities.time_measure import ExecutionTime
-
 import os
-from operator import itemgetter, mul
+from operator import itemgetter
 
-import json
 
 import time
 
@@ -145,7 +142,7 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     execution_time.end_algorithm()
     end_time = time.time()
     print("Time taken: " + str(end_time-start_time))
-    print_influence(influence, "/Users/adamma/Desktop/research/multilayer_core_decomposition/output")
+    print_influence(influence, "/Users/adamma/Desktop/research/Resilience_of_Multiplex_Networks_against_Attacks/output")
     print_end_algorithm(execution_time.execution_time_seconds, number_of_cores, number_of_computed_cores)
     post_processing(cores, distinct_flag, print_file)
 
