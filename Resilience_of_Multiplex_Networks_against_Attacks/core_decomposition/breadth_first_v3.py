@@ -1,3 +1,4 @@
+from __future__ import division
 from collections import defaultdict
 from array import array
 from subroutines.core import core
@@ -5,7 +6,6 @@ from subroutines.commons import *
 from utilities.time_measure import ExecutionTime
 import os
 from operator import itemgetter
-
 
 import time
 
@@ -26,8 +26,6 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     cores = {}
     cores[start_vector] = array('i', multilayer_graph.get_nodes())
 
-    
-
     # core [0]
     if print_file is not None and not distinct_flag:
         print_file.print_core(start_vector, array('i', multilayer_graph.get_nodes()))
@@ -47,7 +45,6 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
         # map to father set
         ancestors[descendant_vector] = [start_vector]
 
-
     # initialize the dictionary that for each vector counts the number of descendants in the queue
     descendants_count = defaultdict(int)
 
@@ -63,8 +60,6 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     inf_by_core_vector[start_vector] = {}
     for i in multilayer_graph.get_nodes():
         inf_by_core_vector[start_vector][i] = 1
-
-
 
     # father level cores to calculate influence
     father_level_cores = cores.copy()
@@ -89,6 +84,7 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
                 father_level_cores = cores.copy()
                 # Cache current level ancestors
                 current_level_ancestors = ancestors.copy()
+
                 level += 1
             ancestors_intersection = build_ancestors_intersection(ancestors[vector], cores, descendants_count, distinct_flag, multilayer_graph=multilayer_graph)
             # if the intersection of its ancestor cores is not empty
@@ -142,14 +138,14 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     execution_time.end_algorithm()
     end_time = time.time()
     print("Time taken: " + str(end_time-start_time))
-    print_influence(influence, "/Users/adamma/Desktop/research/Resilience_of_Multiplex_Networks_against_Attacks/output")
+    print_influence(influence, "/Users/adamma/Desktop/research/resilience_of_multiplex_aetworks_against_attacks/output")
     print_end_algorithm(execution_time.execution_time_seconds, number_of_cores, number_of_computed_cores)
     post_processing(cores, distinct_flag, print_file)
 
 
 def print_influence(influence, path):
     sort_influence = sorted(influence.items(), key = itemgetter(1), reverse=True)
-    with open(os.path.join(path, "influence_v3_1.txt"), 'w+') as f:
+    with open(os.path.join(path, "influence_v3_2.txt"), 'w+') as f:
         for i in sort_influence:
             f.write(str(i[0]) + "\t" + str(i[1]) + "\n")
 
@@ -211,6 +207,15 @@ def get_cores_with_node(node, cores, start_vector):
             core_vectors.append(core_vector)
     return core_vectors
 
+def normalize(influence, target=1.0):
+    '''
+    Normalise the values of a dictionary
+    '''
+    raw = sum(influence.values())
+    factor = target/raw
+    for node, inf in influence.items():
+        influence[node] = float(inf) * factor
+
 def get_influence_v3(influence, multilayer_graph, level, current_level_cores, father_level_cores, inf_by_core_vector, start_vector, current_level_ancestors):
     current_level_count = {}                  # Count how many times a node appeared in the level
     # Record number of appearence of each node on current lattice level
@@ -250,5 +255,10 @@ def get_influence_v3(influence, multilayer_graph, level, current_level_cores, fa
     if level == 1:
         del father_level_cores[start_vector]
         del current_level_cores[start_vector]
+
+    # Normalise influence
+    normalize(influence, target=multilayer_graph.number_of_nodes)
+
+
 
 
