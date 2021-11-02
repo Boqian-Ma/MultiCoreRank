@@ -9,7 +9,7 @@ from operator import itemgetter
 
 import time
 
-def breadth_first(multilayer_graph, print_file, distinct_flag):
+def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
     # measures
     number_of_cores = 0
     number_of_computed_cores = 0
@@ -138,14 +138,14 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     execution_time.end_algorithm()
     end_time = time.time()
     print("Time taken: " + str(end_time-start_time))
-    print_influence(influence, "/Users/adamma/Desktop/research/resilience_of_multiplex_aetworks_against_attacks/output")
+    print_influence(influence, "/Users/adamma/Desktop/research/resilience_of_multiplex_aetworks_against_attacks/output", dataset_name)
     print_end_algorithm(execution_time.execution_time_seconds, number_of_cores, number_of_computed_cores)
     post_processing(cores, distinct_flag, print_file)
 
 
-def print_influence(influence, path):
+def print_influence(influence, path, dataset_name):
     sort_influence = sorted(influence.items(), key = itemgetter(1), reverse=True)
-    with open(os.path.join(path, "influence_v3_2.txt"), 'w+') as f:
+    with open(os.path.join(path, "influence_" + dataset_name + "_v3.txt"), 'w+') as f:
         for i in sort_influence:
             f.write(str(i[0]) + "\t" + str(i[1]) + "\n")
 

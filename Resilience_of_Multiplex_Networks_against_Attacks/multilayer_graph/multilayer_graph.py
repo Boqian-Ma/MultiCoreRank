@@ -6,7 +6,8 @@ import gc
 
 class MultilayerGraph:
 
-    def __init__(self, dataset_path=None):
+    # def __init__(self, dataset_path=None, dataset='multilayer_layer_core_decomposition'):
+    def __init__(self, dataset_path=None, dataset='multilayer_layer_core_decomposition'):
         # ****** instance variables ******
         # layers
         self.number_of_layers = 0
@@ -19,20 +20,25 @@ class MultilayerGraph:
         self.nodes_iterator = xrange(0)
         self.adjacency_list = []
 
+        # Dataset source
+        self.dataset = dataset
+
         # if dataset_path has been specified
         if dataset_path is not None:
             # read the graph from the specified path
             self.load_dataset(dataset_path)
             # set the dataset path
             self.dataset_path = dataset_path
+        
+        # link to different folder
+        
 
         # call the garbage collector
         gc.collect()
 
     def load_dataset(self, dataset_path):
         # open the file
-        dataset_file = open(dirname(getcwd()) + '/datasets/multilayer_layer_core_decomposition/' + dataset_path + '.txt')
-
+        dataset_file = open(dirname(getcwd()) + '/datasets/' + self.dataset + '/' + dataset_path + '.txt')
         # read the first line of the file
         first_line = dataset_file.readline()
         split_first_line = first_line.split(' ')

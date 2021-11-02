@@ -8,7 +8,7 @@ from core_decomposition.breadth_first_v2 import breadth_first as bfs_v2
 
 from core_decomposition.breadth_first_v3 import breadth_first as bfs_v3
 
-from utilities.print_console import print_dataset_name, print_dataset_info
+from utilities.print_console import print_dataset_name, print_dataset_info, print_dataset_source
 from utilities.print_file import PrintFile
 
 
@@ -17,9 +17,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Core Decomposition and Densest Subgraph in Multilayer Networks')
 
     # arguments
+    parser.add_argument('n', help='dataset from which paper. "multilayer_layer_core_decomposition" or "measuring_and_modelling_correlations_in_multiplex_networks"')
+
     parser.add_argument('d', help='dataset')
     parser.add_argument('m', help='method')
-    parser.add_argument('-b', help='beta', type=float)
+    parser.add_argument('-b', help='beta', default=False, type=float)
     # options
     parser.add_argument('--ver', dest='ver', action='store_true', default=False ,help='verbose')
     parser.add_argument('--dis', dest='dis', action='store_true', default=False ,help='distinct cores')
@@ -27,9 +29,12 @@ if __name__ == '__main__':
     # read the arguments
     args = parser.parse_args()
 
+    
+
     # create the input graph and print its name
-    multilayer_graph = MultilayerGraph(args.d)
+    multilayer_graph = MultilayerGraph(args.d, args.n)
     print_dataset_name(args.d)
+    print_dataset_source(args.n)
 
     # create the output file if the --v option is provided
     if args.ver and args.m in {'bfs', 'dfs', 'h', 'n'}:
@@ -40,14 +45,14 @@ if __name__ == '__main__':
 
     # core decomposition algorithms
     if args.m == 'v1':
-        print '---------- Influence measure Version 1 ----------'
+        print ('---------- Influence measure Version 1 ----------')
         bfs_v1(multilayer_graph, print_file, args.dis)
     elif args.m == 'v2':
-        print '---------- Influence measure Version 2 ----------'
+        print ('---------- Influence measure Version 2 ----------')
         bfs_v2(multilayer_graph, print_file, args.dis)
     elif args.m == 'v3':
-        print '---------- Influence measure Version 3 ----------'
-        bfs_v3(multilayer_graph, print_file, args.dis)
+        print ('---------- Influence measure Version 3 ----------')
+        bfs_v3(multilayer_graph, print_file, args.dis, args.d)
 
     # dataset information
     elif args.m == 'info':

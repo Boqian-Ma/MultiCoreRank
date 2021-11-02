@@ -7,6 +7,11 @@ def print_dataset_name(dataset_path):
     print '------------- Dataset -------------'
     print 'Name: ' + dataset_path.split('/')[0].capitalize()
 
+def print_dataset_source(dataset_source):
+    print '------------- Paper -------------'
+    print 'Dataset Source: ' + dataset_source.split('/')[0].capitalize()
+
+
 
 def print_dataset_info(multilayer_graph):
     number_of_nodes = multilayer_graph.number_of_nodes
