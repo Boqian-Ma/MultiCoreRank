@@ -115,7 +115,6 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
                     try:
                         # update the list of the ancestors of the descendant vector
                         ancestors[descendant_vector].append(vector)
-
                     # if the descendant vector has not already been found
                     except KeyError:
                         # add the descendant vector to the queue
@@ -144,7 +143,10 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
 
 
 def print_influence(influence, path, dataset_name):
-    sort_influence = sorted(influence.items(), key = itemgetter(1), reverse=True)
+    #sort_influence = sorted(influence.items(), key = itemgetter(1), reverse=True)
+    # ASC by key, DESC by value
+    sort_influence = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
+
     with open(os.path.join(path, "influence_" + dataset_name + "_v3.txt"), 'w+') as f:
         for i in sort_influence:
             f.write(str(i[0]) + "\t" + str(i[1]) + "\n")
