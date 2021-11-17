@@ -84,8 +84,8 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
                 father_level_cores = cores.copy()
                 # Cache current level ancestors
                 current_level_ancestors = ancestors.copy()
-
                 level += 1
+            
             ancestors_intersection = build_ancestors_intersection(ancestors[vector], cores, descendants_count, distinct_flag, multilayer_graph=multilayer_graph)
             # if the intersection of its ancestor cores is not empty
             if len(ancestors_intersection) > 0:
@@ -123,7 +123,6 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
 
                     # increment descendants_count
                     descendants_count[vector] += 1
-                    # print("descendents_count: " + str(descendants_count))
         else:
             # for each ancestor of vector
             for ancestor in ancestors[vector]:
@@ -134,21 +133,24 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
         # only keep those directly above
         del ancestors[vector]
     # end of the algorithm
+
     execution_time.end_algorithm()
     end_time = time.time()
     print("Time taken: " + str(end_time-start_time))
+
+    influence = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
     print_influence(influence, "/Users/adamma/Desktop/research/resilience_of_multiplex_aetworks_against_attacks/output", dataset_name)
     print_end_algorithm(execution_time.execution_time_seconds, number_of_cores, number_of_computed_cores)
     post_processing(cores, distinct_flag, print_file)
+
+    return influence
 
 
 def print_influence(influence, path, dataset_name):
     #sort_influence = sorted(influence.items(), key = itemgetter(1), reverse=True)
     # ASC by key, DESC by value
-    sort_influence = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
-
     with open(os.path.join(path, "influence_" + dataset_name + "_v3.txt"), 'w+') as f:
-        for i in sort_influence:
+        for i in influence:
             f.write(str(i[0]) + "\t" + str(i[1]) + "\n")
 
 
@@ -224,7 +226,7 @@ def get_influence_v3(influence, multilayer_graph, level, current_level_cores, fa
     '''
     Main driver of finding influence in this graph
     '''
-    
+
     current_level_count = {}                  # Count how many times a node appeared in the level
     # Record number of appearence of each node on current lattice level
 

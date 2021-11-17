@@ -9,13 +9,9 @@ def test_remove_node(dataset):
 
 
 def test_get_nodes(dataset):
-
     multilayer_graph = MultilayerGraph(dataset)
-
     assert(multilayer_graph.get_connected_nodes() == set([1, 2, 3, 4, 5, 6]))
-
     multilayer_graph.remove_node(1)
-
     assert(multilayer_graph.get_connected_nodes() == set([2, 3, 4, 5, 6]))
 
 
