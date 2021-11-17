@@ -5,7 +5,6 @@ from multilayer_graph.multilayer_graph import MultilayerGraph
 
 from core_decomposition.breadth_first_v1 import breadth_first as bfs_v1
 from core_decomposition.breadth_first_v2 import breadth_first as bfs_v2
-
 from core_decomposition.breadth_first_v3 import breadth_first as bfs_v3
 
 from utilities.print_console import print_dataset_name, print_dataset_info, print_dataset_source
@@ -17,7 +16,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Core Decomposition and Densest Subgraph in Multilayer Networks')
 
     # arguments
-    parser.add_argument('n', help='dataset from which paper. "multilayer_layer_core_decomposition" or "measuring_and_modelling_correlations_in_multiplex_networks"')
+    #parser.add_argument('n', help='dataset from which paper. "multilayer_layer_core_decomposition" or "measuring_and_modelling_correlations_in_multiplex_networks"')
 
     parser.add_argument('d', help='dataset')
     parser.add_argument('m', help='method')
@@ -29,12 +28,10 @@ if __name__ == '__main__':
     # read the arguments
     args = parser.parse_args()
 
-    
-
     # create the input graph and print its name
-    multilayer_graph = MultilayerGraph(args.d, args.n)
+    multilayer_graph = MultilayerGraph(args.d)
     print_dataset_name(args.d)
-    print_dataset_source(args.n)
+    #print_dataset_source(args.n)
 
     # create the output file if the --v option is provided
     if args.ver and args.m in {'bfs', 'dfs', 'h', 'n'}:

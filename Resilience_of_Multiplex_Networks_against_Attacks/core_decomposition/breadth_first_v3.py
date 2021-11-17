@@ -218,7 +218,13 @@ def normalize(influence, target=1.0):
     for node, inf in influence.items():
         influence[node] = float(inf) * factor
 
+
+
 def get_influence_v3(influence, multilayer_graph, level, current_level_cores, father_level_cores, inf_by_core_vector, start_vector, current_level_ancestors):
+    '''
+    Main driver of finding influence in this graph
+    '''
+    
     current_level_count = {}                  # Count how many times a node appeared in the level
     # Record number of appearence of each node on current lattice level
 

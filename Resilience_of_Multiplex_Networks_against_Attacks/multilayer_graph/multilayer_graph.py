@@ -7,7 +7,7 @@ import gc
 class MultilayerGraph:
 
     # def __init__(self, dataset_path=None, dataset='multilayer_layer_core_decomposition'):
-    def __init__(self, dataset='multilayer_layer_core_decomposition', dataset_file=None):
+    def __init__(self, dataset_file=None):
         # ****** instance variables ******
         # layers
         self.number_of_layers = 0
@@ -21,7 +21,7 @@ class MultilayerGraph:
         self.adjacency_list = []
 
         # Dataset source
-        self.dataset = dataset
+        #self.dataset = dataset
 
         # if dataset_path has been specified
         if dataset_file is not None:
@@ -29,16 +29,13 @@ class MultilayerGraph:
             self.load_dataset(dataset_file)
             # set the dataset path
             self.dataset_file = dataset_file
-        
-        # link to different folder
-        
-
+                
         # call the garbage collector
         gc.collect()
 
     def load_dataset(self, dataset_file):
         # open the file
-        dataset_file = open(dirname(getcwd()) + '/datasets/' + self.dataset + '/' + dataset_file + '.txt')
+        dataset_file = open(dirname(getcwd()) + '/datasets/' + dataset_file + '.txt')
         # read the first line of the file
         first_line = dataset_file.readline()
         split_first_line = first_line.split(' ')
@@ -50,6 +47,7 @@ class MultilayerGraph:
         self.number_of_nodes = int(split_first_line[1])
         self.maximum_node = int(split_first_line[2])
         self.nodes_iterator = xrange(self.maximum_node + 1)
+
         # create the empty adjacency list
         self.adjacency_list = [[array('i') for _ in self.layers_iterator] for _ in self.nodes_iterator]
 
@@ -98,7 +96,7 @@ class MultilayerGraph:
         empty the array to keep node index
         '''
         for i in range(self.number_of_layers):
-            # clear connections
+            # clear connections of given node
             self.adjacency_list[node][i] = array('i') 
 
         # Remove node from all other adjucency list elements
@@ -107,15 +105,94 @@ class MultilayerGraph:
                 if node in self.adjacency_list[i][j]:
                     self.adjacency_list[i][j].remove(node)
 
+    # ****** Remove a list of node from the graph ******
+    def remove_nodes(self, nodes):
+        for node in nodes:
+            for i in range(self.number_of_layers):
+                # clear connections of given node
+                self.adjacency_list[node][i] = array('i') 
+            # Remove node from all other adjucency list elements
+            for i in range(self.number_of_nodes + 1):
+                for j in range(len(self.adjacency_list[i])):
+                    if node in self.adjacency_list[i][j]:
+                        self.adjacency_list[i][j].remove(node)
 
     # ****** nodes ******
-    def get_nodes(self):
+    def get_connected_nodes(self):
+        '''
+        Get the set of connected nodes, excluding nodes with no connections
+        '''  
         if self.number_of_nodes == self.maximum_node:
-            nodes = set(self.nodes_iterator)
+            nodes = list(set(self.nodes_iterator))
             nodes.remove(0)
-            return nodes
+
+            # Flag to see if node is isolated
+            for node in nodes:
+                flag = False
+                for layer in range(self.number_of_layers):
+                    if len(self.adjacency_list[node][layer]) != 0:
+                        break
+                
+                # if all layers are empty
+                if layer == self.number_of_layers - 1:
+                    nodes.remove(node)  
+
+            return set(nodes)
+
         else:
-            return set(self.nodes_iterator)
+            # Flag to see if node is isolated
+            nodes = list(set(self.nodes_iterator))
+            for node in nodes:
+                flag = False
+                for layer in range(self.number_of_layers):
+                    if len(self.adjacency_list[node][layer]) != 0:
+                        break
+                if layer == self.number_of_layers - 1:
+                    nodes.remove(node)  
+            return set(nodes)
+
+    def get_nodes(self):
+        '''
+        Get nodes that have at least one connection
+        '''
+
+        # 0 index is trivial node we dont want
+
+        # if self.number_of_nodes == self.maximum_node:
+        #     nodes = set(self.nodes_iterator)
+        #     nodes.remove(0)
+        #     return nodes
+        # else:
+        #     return set(self.nodes_iterator)
+
+        if self.number_of_nodes == self.maximum_node:
+            nodes = list(set(self.nodes_iterator))
+            nodes.remove(0)
+
+            # Flag to see if node is isolated
+            for node in nodes:
+                flag = False
+                for layer in range(self.number_of_layers):
+                    if len(self.adjacency_list[node][layer]) != 0:
+                        break
+                
+                # if all layers are empty
+                if layer == self.number_of_layers - 1:
+                    nodes.remove(node)  
+
+            return set(nodes)
+
+        else:
+            # Flag to see if node is isolated
+            nodes = list(set(self.nodes_iterator))
+            for node in nodes:
+                flag = False
+                for layer in range(self.number_of_layers):
+                    if len(self.adjacency_list[node][layer]) != 0:
+                        break
+                if layer == self.number_of_layers - 1:
+                    nodes.remove(node)  
+            return set(nodes)
 
     # ****** edges ******
     def get_number_of_edges(self, layer=None):
