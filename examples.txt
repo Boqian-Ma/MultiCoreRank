@@ -16,7 +16,7 @@ python influence_measure.py  example v3 --ver
 # Cologen
 
 
-python influence_measure.py  celegans v3 --ver
+python main.py  example v3 --ver
 
 
 
