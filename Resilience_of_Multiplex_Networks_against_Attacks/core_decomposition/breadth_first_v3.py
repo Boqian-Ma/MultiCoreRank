@@ -5,9 +5,8 @@ from subroutines.core import core
 from subroutines.commons import *
 from utilities.time_measure import ExecutionTime
 import os
-from operator import itemgetter
-
 import time
+
 
 def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
     # measures
@@ -136,13 +135,14 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
 
     execution_time.end_algorithm()
     end_time = time.time()
-    print("Time taken: " + str(end_time-start_time))
 
     influence = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
+
+    print("Time taken: " + str(end_time-start_time))
     print_influence(influence, "/Users/adamma/Desktop/research/resilience_of_multiplex_aetworks_against_attacks/output", dataset_name)
+    
     print_end_algorithm(execution_time.execution_time_seconds, number_of_cores, number_of_computed_cores)
     post_processing(cores, distinct_flag, print_file)
-
     return influence
 
 

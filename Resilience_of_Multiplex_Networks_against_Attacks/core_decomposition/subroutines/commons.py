@@ -91,7 +91,7 @@ def post_processing(cores, distinct_flag, print_file):
         filter_distinct_cores(cores)
 
         if print_file is not None:
-            print 'Printing cores...'
+            print ('Printing cores...')
 
             # for each core
             for vector, k_core in cores.iteritems():
@@ -100,7 +100,7 @@ def post_processing(cores, distinct_flag, print_file):
 
 
 def filter_distinct_cores(cores):
-    print 'Filtering distinct cores...'
+    print ('Filtering distinct cores...')
 
     # vectors ordered by their level
     ordered_vectors = sorted(cores.iterkeys(), key=sum)
@@ -118,4 +118,4 @@ def filter_distinct_cores(cores):
                 del cores[vector]
                 break
 
-    print 'Number of distinct cores: ' + str(len(cores))
+    print ('Number of distinct cores: ' + str(len(cores)))

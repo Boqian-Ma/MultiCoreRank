@@ -3,9 +3,12 @@ from os.path import dirname
 from array import array
 import gc
 
+import itertools
+
+import numpy as np
+import scipy.stats
 
 class MultilayerGraph:
-
     # def __init__(self, dataset_path=None, dataset='multilayer_layer_core_decomposition'):
     def __init__(self, dataset_file=None):
         # ****** instance variables ******
@@ -84,41 +87,25 @@ class MultilayerGraph:
     # ****** Remove a node from the graph ******
     def remove_node(self, node):
         '''
-        [
-            [array('i'), array('i')], 
-            [array('i', [2, 4, 5]), array('i', [2])], 
-            [array('i', [1, 3, 4, 5, 6]), array('i', [1, 3, 4, 5, 6])], 
-            [array('i', [2]), array('i', [2, 5, 6])], 
-            [array('i', [1, 2, 5]), array('i', [2])], 
-            [array('i', [1, 2, 4, 6]), array('i', [2, 3, 6])], 
-            [array('i', [2, 5]), array('i', [2, 3, 5])]
-        ]
-        empty the array to keep node index
+            Remove a node from the graph and unlink all edgesadobe
         '''
         for i in range(self.number_of_layers):
             # clear connections of given node
             self.adjacency_list[node][i] = array('i') 
 
         # Remove node from all other adjucency list elements
-        for i in range(self.number_of_nodes + 1):
-            for j in range(len(self.adjacency_list[i])):
+        for i in range(1, self.number_of_nodes + 1):
+            for j in range(self.number_of_layers):
                 if node in self.adjacency_list[i][j]:
                     self.adjacency_list[i][j].remove(node)
 
     # ****** Remove a list of node from the graph ******
     def remove_nodes(self, nodes):
         for node in nodes:
-            for i in range(self.number_of_layers):
-                # clear connections of given node
-                self.adjacency_list[node][i] = array('i') 
-            # Remove node from all other adjucency list elements
-            for i in range(self.number_of_nodes + 1):
-                for j in range(len(self.adjacency_list[i])):
-                    if node in self.adjacency_list[i][j]:
-                        self.adjacency_list[i][j].remove(node)
+            self.remove_node(node)
 
     # ****** nodes ******
-    def get_connected_nodes(self):
+    def get_nodes(self):
         '''
         Get the set of connected nodes, excluding nodes with no connections
         '''  
@@ -127,70 +114,35 @@ class MultilayerGraph:
             nodes.remove(0)
 
             # Flag to see if node is isolated
-            for node in nodes:
-                flag = False
+            for node in range(1, len(nodes) + 1):
+
+                flag = False    # track of the node is an orphan
+
                 for layer in range(self.number_of_layers):
                     if len(self.adjacency_list[node][layer]) != 0:
+                        flag = True
                         break
                 
                 # if all layers are empty
-                if layer == self.number_of_layers - 1:
+                if flag == False:
                     nodes.remove(node)  
-
+        
             return set(nodes)
 
         else:
             # Flag to see if node is isolated
             nodes = list(set(self.nodes_iterator))
-            for node in nodes:
-                flag = False
+            for node in range(1, len(nodes) + 1):
+
+                flag = False    # track of the node is an orphan
+
                 for layer in range(self.number_of_layers):
                     if len(self.adjacency_list[node][layer]) != 0:
-                        break
-                if layer == self.number_of_layers - 1:
-                    nodes.remove(node)  
-            return set(nodes)
-
-    def get_nodes(self):
-        '''
-        Get nodes that have at least one connection
-        '''
-
-        # 0 index is trivial node we dont want
-
-        # if self.number_of_nodes == self.maximum_node:
-        #     nodes = set(self.nodes_iterator)
-        #     nodes.remove(0)
-        #     return nodes
-        # else:
-        #     return set(self.nodes_iterator)
-
-        if self.number_of_nodes == self.maximum_node:
-            nodes = list(set(self.nodes_iterator))
-            nodes.remove(0)
-
-            # Flag to see if node is isolated
-            for node in nodes:
-                flag = False
-                for layer in range(self.number_of_layers):
-                    if len(self.adjacency_list[node][layer]) != 0:
+                        flag = True
                         break
                 
                 # if all layers are empty
-                if layer == self.number_of_layers - 1:
-                    nodes.remove(node)  
-
-            return set(nodes)
-
-        else:
-            # Flag to see if node is isolated
-            nodes = list(set(self.nodes_iterator))
-            for node in nodes:
-                flag = False
-                for layer in range(self.number_of_layers):
-                    if len(self.adjacency_list[node][layer]) != 0:
-                        break
-                if layer == self.number_of_layers - 1:
+                if flag == False:
                     nodes.remove(node)  
             return set(nodes)
 
@@ -216,3 +168,25 @@ class MultilayerGraph:
     # ****** layers ******
     def get_layer_mapping(self, layer):
         return self.layers_map[layer]
+
+    
+    def pearson_correlation_coefficient(self):
+        '''
+        Compute pearson correlation of a graph
+        '''
+        layers = [x for x in range(self.number_of_layers)]
+        # Get layers combination pairs
+        combinations = itertools.combinations(layers, 2)
+
+        coe = 0
+        for pair in combinations:
+            # Get x1 and x2
+            x1 = []
+            x2 = []
+            for node in range(self.number_of_nodes):
+                x1.append(len(self.adjacency_list[node][pair[0]]))
+                x2.append(len(self.adjacency_list[node][pair[1]]))
+
+            coe += scipy.stats.pearsonr(x1, x2)[0]
+        return coe
+    
