@@ -79,11 +79,21 @@ class MultilayerGraph:
 
     def add_edge(self, from_node, to_node, layer):
         # if the edge is not a self-loop
+        '''
+        TODO: what if there are duplicates
+        i.e. the file has the following lines
+            1 2 18
+            1 18 2
+        Only one line should be recorded, otherwise the number of links will double
+        '''
         if from_node != to_node:
             # add the edge
-            self.adjacency_list[from_node][layer].append(to_node)
-            self.adjacency_list[to_node][layer].append(from_node)
-
+            # Check if nodes are already linked to prevent duplicates
+            if to_node not in self.adjacency_list[from_node][layer] and from_node not in self.adjacency_list[to_node][layer]:
+                self.adjacency_list[from_node][layer].append(to_node)
+                self.adjacency_list[to_node][layer].append(from_node)
+            else:
+                print("yeet")
     # ****** Remove a node from the graph ******
     def remove_node(self, node):
         '''
@@ -169,24 +179,68 @@ class MultilayerGraph:
     def get_layer_mapping(self, layer):
         return self.layers_map[layer]
 
+
+    def get_layer_node_degrees(self, layer1, layer2):
+        '''
+        Given two layers return two lists of node degrees for all nodes 
+        Used for pearson coefficient
+        '''
+        degrees1 = []
+        degrees2 = []
+
+        # first node is used for a placeholder, always empty
+        for node in range(1, self.number_of_nodes + 1):
+            degrees1.append(len(self.adjacency_list[node][layer1]))
+            degrees2.append(len(self.adjacency_list[node][layer2]))
+        
+        return degrees1, degrees2
     
     def pearson_correlation_coefficient(self):
         '''
         Compute pearson correlation of a graph
         '''
         layers = [x for x in range(self.number_of_layers)]
+        print(len(layers))
         # Get layers combination pairs
-        combinations = itertools.combinations(layers, 2)
 
-        coe = 0
-        for pair in combinations:
-            # Get x1 and x2
-            x1 = []
-            x2 = []
-            for node in range(self.number_of_nodes):
-                x1.append(len(self.adjacency_list[node][pair[0]]))
-                x2.append(len(self.adjacency_list[node][pair[1]]))
+        combinations = list(itertools.combinations(layers, 2))
 
-            coe += scipy.stats.pearsonr(x1, x2)[0]
-        return coe
+        corr_matrix = [[0] * self.number_of_layers for i in range(self.number_of_layers)]
+
+        # initialise diaganol
+
+        for i in range(self.number_of_layers):
+            corr_matrix[i][i] = 1
+
+        #print(corr_matrix)
+        #print(len(list(combinations)))
+
+        for layer1, layer2 in combinations:
+            # pair[0] is the first layer
+            # pair[1] is the second layer
+            #print(pair)
+            # x1 = [] # array containing degrees of all nodes in first layer
+            # x2 = [] # array containing degrees of all nodes in second layer
+            # for node in range(self.number_of_nodes):
+            #     x1.append(len(self.adjacency_list[node][pair[0]]))
+            #     x2.append(len(self.adjacency_list[node][pair[1]]))
+
+            x1, x2 = self.get_layer_node_degrees(layer1, layer2)
+
+            # normalise x1, x2
+            # x1 = x1 / np.linalg.norm(x1)
+            # x2 = x2 / np.linalg.norm(x2)
+            #print(x1)
+            corr_matrix[layer1][layer2] = corr_matrix[layer2][layer1] = scipy.stats.pearsonr(x1, x2)[0]
+
+        return corr_matrix
+
+        # x1 = []
+        # x2 = []
+        # for node in range(self.number_of_nodes):
+        #     x1.append(len(self.adjacency_list[node][layer1]))
+        #     x2.append(len(self.adjacency_list[node][layer2]))
+
+        #return scipy.stats.pearsonr(x1, x2)[0]
+    
     

@@ -4,9 +4,22 @@ Todo list
 1. Remove node from graph   (done)
 2. Remove a list of nodes from graph 17/11/2021
 3. Find top n% by influence 
+    
 4. measure correlation
+    peasron (done)
+
 5. Remove a percentage of top nodes
 
 # write tests
 1. miltiplier_graph.py 21/11/2021
+
+meeting notes
+
+layer differences
+    under consideration
+number of node differences
+    cap it at a persentage of attack
+
+
+
 
