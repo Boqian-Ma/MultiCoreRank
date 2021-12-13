@@ -13,6 +13,9 @@ python influence_measure.py example  v3  --ver
 
 python influence_measure.py  example v3 --ver
 
+python influence_measure.py  aps v3 --ver
+
+
 # Cologen
 
 

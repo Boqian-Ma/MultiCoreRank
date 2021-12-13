@@ -193,6 +193,7 @@ class MultilayerGraph:
             degrees1.append(len(self.adjacency_list[node][layer1]))
             degrees2.append(len(self.adjacency_list[node][layer2]))
         
+        #print(degrees1, degrees2)
         return degrees1, degrees2
     
     def pearson_correlation_coefficient(self):
@@ -200,9 +201,8 @@ class MultilayerGraph:
         Compute pearson correlation of a graph
         '''
         layers = [x for x in range(self.number_of_layers)]
-        print(len(layers))
-        # Get layers combination pairs
 
+        # Get layers combination pairs
         combinations = list(itertools.combinations(layers, 2))
 
         corr_matrix = [[0] * self.number_of_layers for i in range(self.number_of_layers)]
@@ -212,35 +212,13 @@ class MultilayerGraph:
         for i in range(self.number_of_layers):
             corr_matrix[i][i] = 1
 
-        #print(corr_matrix)
-        #print(len(list(combinations)))
-
         for layer1, layer2 in combinations:
-            # pair[0] is the first layer
-            # pair[1] is the second layer
-            #print(pair)
-            # x1 = [] # array containing degrees of all nodes in first layer
-            # x2 = [] # array containing degrees of all nodes in second layer
-            # for node in range(self.number_of_nodes):
-            #     x1.append(len(self.adjacency_list[node][pair[0]]))
-            #     x2.append(len(self.adjacency_list[node][pair[1]]))
-
             x1, x2 = self.get_layer_node_degrees(layer1, layer2)
-
-            # normalise x1, x2
-            # x1 = x1 / np.linalg.norm(x1)
-            # x2 = x2 / np.linalg.norm(x2)
-            #print(x1)
             corr_matrix[layer1][layer2] = corr_matrix[layer2][layer1] = scipy.stats.pearsonr(x1, x2)[0]
 
         return corr_matrix
 
-        # x1 = []
-        # x2 = []
-        # for node in range(self.number_of_nodes):
-        #     x1.append(len(self.adjacency_list[node][layer1]))
-        #     x2.append(len(self.adjacency_list[node][layer2]))
 
-        #return scipy.stats.pearsonr(x1, x2)[0]
-    
+    def speaman_rank_correlation_coefficient(self):
+        pass    
     

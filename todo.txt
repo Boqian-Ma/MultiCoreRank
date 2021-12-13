@@ -20,6 +20,14 @@ layer differences
 number of node differences
     cap it at a persentage of attack
 
+# remove 20% of nodes in total
 
+    find the number of nodes that make up 20%, then spend 5 iterations remove all to observe changes
+
+
+13/12/2021 
+1. Run APS core decomposition 
+    find timing
+    
 
 
