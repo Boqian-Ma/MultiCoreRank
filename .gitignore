@@ -8,8 +8,8 @@ output
 
 .vscode
 
-.vscode
-
 data
 
 __pycache__
+
+*.pyc

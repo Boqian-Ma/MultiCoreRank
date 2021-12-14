@@ -5,14 +5,15 @@ import numpy as np
 import pytest
 import time
 
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde, kde
 
 from core_decomposition.breadth_first_v3 import breadth_first as bfs
 from utilities.print_console import print_dataset_name, print_dataset_info, print_dataset_source
 from utilities.print_file import PrintFile 
-
-
-DATA_SET = "example"
 
 def create_plots(multilayer_graph, plot_col, axs):
 
@@ -35,14 +36,11 @@ def create_plots(multilayer_graph, plot_col, axs):
     axs[1, plot_col].plot(pearson_x, pearson_y)
 
 
-
-from scipy.stats import gaussian_kde, kde
-
 def main():
     start_time = time.time()
     data_set = "aps"
     percentage = 0.1
-    total_columns = 2
+    total_columns = 1
 
     multilayer_graph = MultilayerGraph(data_set)
 
@@ -57,7 +55,6 @@ def main():
     
     # Origional plot
     create_plots(multilayer_graph, 0, axs)
-
     
     for col in range(1, total_columns):
 
@@ -76,16 +73,11 @@ def main():
         # find new plots
         create_plots(multilayer_graph, col, axs)
 
-
-    plt.show()
+    plt.savefig("figures/" + data_set + ".png", format="png")
 
     print(time.time()-start_time)
     quit()
     # Create subplot
-
-
-
-    
 
     pearson_coe_matrix = multilayer_graph.pearson_correlation_coefficient()
     pearson_flat_list = [item for sublist in pearson_coe_matrix for item in sublist]
