@@ -80,6 +80,7 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
             
             # Calculate influence of the level above
             if sum(list(vector)) > level:   # whenever we go down a level in the core lattice
+                print("in level {}".format(level))
                 get_influence_v3(influence, multilayer_graph, level, cores, father_level_cores, inf_by_core_vector, start_vector, current_level_ancestors)
                 inf_by_core_vector = update_influence_by_core_vector(cores, inf_by_core_vector, influence)
                 # Cache father level cores
@@ -107,6 +108,7 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
                 # update influce by level by node
 
                 number_of_cores += 1
+                print("core found...")
                 if print_file is not None and not distinct_flag:
                     print_file.print_core(vector, k_core)
 

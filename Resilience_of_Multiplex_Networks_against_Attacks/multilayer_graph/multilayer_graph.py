@@ -19,6 +19,8 @@ class MultilayerGraph:
 
         # nodes and adjacency list
         self.number_of_nodes = 0
+        self.modified_number_of_nodes = 0
+
         self.maximum_node = 0
         self.nodes_iterator = xrange(0)
         self.adjacency_list = []
@@ -48,6 +50,7 @@ class MultilayerGraph:
         self.layers_iterator = xrange(self.number_of_layers)
         # set the number of nodes
         self.number_of_nodes = int(split_first_line[1])
+        self.modified_number_of_nodes = int(split_first_line[1])
         self.maximum_node = int(split_first_line[2])
         self.nodes_iterator = xrange(self.maximum_node + 1)
 
@@ -89,13 +92,19 @@ class MultilayerGraph:
         if from_node != to_node:
             # add the edge
             # Check if nodes are already linked to prevent duplicates
+ 
+            # self.adjacency_list[from_node][layer].append(to_node)
+            # self.adjacency_list[to_node][layer].append(from_node)
+
             if to_node not in self.adjacency_list[from_node][layer] and from_node not in self.adjacency_list[to_node][layer]:
                 self.adjacency_list[from_node][layer].append(to_node)
                 self.adjacency_list[to_node][layer].append(from_node)
-            else:
-                print("yeet")
+            # else:
+            #     print("yeet")
+
+            
     # ****** Remove a node from the graph ******
-    def remove_node(self, node):
+    def _remove_node(self, node):
         '''
             Remove a node from the graph and unlink all edgesadobe
         '''
@@ -109,10 +118,33 @@ class MultilayerGraph:
                 if node in self.adjacency_list[i][j]:
                     self.adjacency_list[i][j].remove(node)
 
+        # Update total nodes
+
+    # ****** update total number of nodes after node removal ******
+    def _update_number_of_nodes(self):
+        node_count = 0
+
+        for i in range(1, self.number_of_nodes + 1):
+            flag = False
+
+            for j in range(self.number_of_layers):
+                if len(self.adjacency_list[i][j]) > 0:
+                    flag = True
+
+            if flag is True:
+                node_count += 1
+
+        print(node_count)
+
+        self.modified_number_of_nodes = node_count
+
+       
+
     # ****** Remove a list of node from the graph ******
     def remove_nodes(self, nodes):
         for node in nodes:
-            self.remove_node(node)
+            self._remove_node(node)
+        self._update_number_of_nodes()
 
     # ****** nodes ******
     def get_nodes(self):

@@ -3,10 +3,11 @@ Todo list
 0. Update Get nodes to only return nodes with edges (done) 17/11/2021
 1. Remove node from graph   (done)
 2. Remove a list of nodes from graph 17/11/2021
-3. Find top n% by influence 
+3. Find top n% by influence (done)
     
 4. measure correlation
     peasron (done)
+    spearman ranking()
 
 5. Remove a percentage of top nodes
 
@@ -25,9 +26,16 @@ number of node differences
     find the number of nodes that make up 20%, then spend 5 iterations remove all to observe changes
 
 
+
+
 13/12/2021 
 1. Run APS core decomposition 
     find timing
     
+16/12/2021
+Set y scale the same
+
+Aarhus datset 
 
 
+https://manliodedomenico.com/data.php
