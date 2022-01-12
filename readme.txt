@@ -1,3 +1,22 @@
+Katana notes
+
+Manage jobs: https://unsw-restech.github.io/using_katana/running_jobs.html#managing-jobs-on-katana
+Show all jobs in system
+	qstat | less
+Show my own job
+	qstat -u $USER
+	qstat -su $USER
+	qstat -f <job id>
+
+show info about a job
+	qstat -f -x 2067936
+
+#PBS -l select=1:ncpus=8:mem=124gb
+#PBS -l walltime=12:00:00
+#PBS -M boqian.ma@student.unsw.edu.au
+
+
+
 CORE DECOMPOSITION AND DENSEST SUBGRAPH IN MULTILAYER NETWORKS
 
 FOLDERS

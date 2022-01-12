@@ -1,4 +1,4 @@
-from os import getcwd
+from os import error, getcwd
 from os.path import dirname
 from array import array
 import gc
@@ -239,14 +239,18 @@ class MultilayerGraph:
 
         corr_matrix = [[0] * self.number_of_layers for i in range(self.number_of_layers)]
 
-        # initialise diaganol
-
+        # initialise diaganol for heatmap
         for i in range(self.number_of_layers):
             corr_matrix[i][i] = 1
 
         for layer1, layer2 in combinations:
             x1, x2 = self.get_layer_node_degrees(layer1, layer2)
+
+            #print(x1, x2)
+
             corr_matrix[layer1][layer2] = corr_matrix[layer2][layer1] = scipy.stats.pearsonr(x1, x2)[0]
+
+            # will return nan results
 
         return corr_matrix
 

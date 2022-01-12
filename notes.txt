@@ -1,0 +1,35 @@
+https://arxiv.org/pdf/1307.1253.pdf
+Network robustness of multiplex networks with interlayer degree correlations
+
+For example, for maximallycorrelated duplex networks, all pairs of nodes in the giant component are connected via at least two
+independent paths and network structure is highly resilient to random failure
+
+In contrast, anticorrelated duplex networks are on one hand robust against targeted attack on high-degree nodes,
+but on the other hand they can be vulnerable to random failure.
+
+https://www.researchgate.net/publication/230918450_Inter-similarity_between_coupled_networks
+Title: Inter-similarity between coupled networks
+Note: correlation measurement
+
+Dependency link:
+
+https://arxiv.org/pdf/cond-mat/0205405.pdf
+Title: Assortative mixing in networks
+
+Degree distribution p_k: pk is the probability
+that a randomly chosen vertex on the graph will have
+degree k
+
+
+https://arxiv.org/pdf/cond-mat/0104546.pdf
+Title: Are random graphs really random
+Pearson correlation formula root
+
+
+
+Notes:
+
+1. such influence measure calculation takes large compute power, 
+likely not feasible in the real world.
+
+2. 
