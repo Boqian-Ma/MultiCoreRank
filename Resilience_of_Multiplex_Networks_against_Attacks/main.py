@@ -33,7 +33,7 @@ def create_plots(multilayer_graph, plot_col, axs, density_y_lim=None):
     # normalised histogram
     weights = np.ones_like(pearson_flat_list) / float(len(pearson_flat_list))   # calculate weights
     
-    print(pearson_flat_list)
+    #print(pearson_flat_list)
 
     hist = axs[1, plot_col].hist(pearson_flat_list, bins=10, weights=weights)
 
@@ -82,21 +82,21 @@ def create_plot(multilayer_graph, axs):
     axs[1].set_xlim(-1, 1)
     axs[1].set_ylabel('Density')
     axs[1].set_xlabel('Pearson Correlation Coefficient')
-
     # Plot 2
-    density, bins, _ = hist
-    bin_centers = 0.5 * (bins[1: ] + bins[ :-1])
+    # density, bins, _ = hist
+    # bin_centers = 0.5 * (bins[1: ] + bins[ :-1])
 
-    print(bin_centers)
+    # print(bin_centers)
 
-    # axs[2].plot(bin_centers, density) 
-    axs[2].set_xlim(-1, 1)
-    axs[2].set_ylabel('Density')
-    axs[2].set_xlabel('Pearson Correlation Coefficient')
+    # # axs[2].plot(bin_centers, density) 
+    # axs[2].set_xlim(-1, 1)
+    # axs[2].set_ylabel('Density')
+    # axs[2].set_xlabel('Pearson Correlation Coefficient')
 
-    xnew = np.linspace(-1, 1, 1000)  
-    density_smooth = spline(bin_centers, density, xnew)
-    axs[2].plot(xnew, density_smooth)
+    # xnew = np.linspace(-1, 1, 1000)  
+    # density_smooth = spline(bin_centers, density, xnew)
+    # axs[2].plot(xnew, density_smooth)
+
     # sns.kdeplot(bin_centers, ax=axs[2])
     # Check area underneith
     # widths = bins[1:] - bins[:-1]
@@ -111,11 +111,11 @@ def new_axis(arr):
 
 def main():
     start_time = time.time()
-    data_set = "example"
-    percentage = 0.2
+    data_set = "aps"
+    percentage = 0.1
     # number of columns in the final output
     # total_columns - 1 is the number of times the percentage
-    total_columns = 5
+    total_columns = 2
 
     multilayer_graph = MultilayerGraph(data_set)
 
@@ -161,6 +161,8 @@ def main():
     else:
         # ploting only 1 column
         fig.suptitle('Dataset: {}'.format(data_set), fontsize=16)
+        fig.suptitle('Dataset: {}, # of nodes: {}, # of layers: {} \n'.format(data_set, multilayer_graph.number_of_nodes, multilayer_graph.number_of_layers), fontsize=16)
+
         create_plot(multilayer_graph, axs)
 
     plt.savefig("figures/" + data_set + "_" + str(total_columns) + "_" + str(percentage) +".png", format="png")
