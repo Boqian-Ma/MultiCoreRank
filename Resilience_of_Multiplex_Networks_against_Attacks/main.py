@@ -16,6 +16,9 @@ from utilities.print_file import PrintFile
 
 
 def correlation_mean(list, num_layers):
+    '''
+    Calculate mean of a list
+    '''
     mean_diag = sum(list) / float(len(list))
 
     try:
@@ -191,7 +194,8 @@ def main():
         plt.savefig("figures/{}_{}_{}_iterative.png".format(data_set, total_columns, percentage), format="png")
 
     elif type == "o":
-
+        # Once off influence calculation
+        
         # Locate influence file
         if not os.path.isfile('influence/{}_influence_ranking.txt'.format(data_set)):
             # calculate influence and put in 

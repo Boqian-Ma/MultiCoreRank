@@ -1,3 +1,71 @@
+# Set up
+
+python version: 2.75
+
+1. Start new virtual environment
+2. ``pip install -r requirements.txt``
+3. download ``datasets`` folder from (too big to upload onto github)
+4. place ``datasets`` in root folder
+
+
+# FOLDERS
+* datasets: datasets listed in paper and more
+* ``Resilience_of_Multiplex_Networks_against_Attacks``: code
+* ``Resilience_of_Multiplex_Networks_against_Attacks/figures``: output plots
+* ``Resilience_of_Multiplex_Networks_against_Attacks/influence``: saved influence ranking
+* ``Resilience_of_Multiplex_Networks_against_Attacks/core_decomposition``: core decomposition algorithms
+* ``Resilience_of_Multiplex_Networks_against_Attacks/figures``: output plots
+* output: destination of code's output (core decompositions)
+
+
+
+# EXECUTION
+Run the following command from the folder ``Resilience_of_Multiplex_Networks_against_Attacks/``:
+
+```python main.py d m p c```
+
+Examples
+
+```python main.py example i 0.2 5``` (iteratively removing top 20% of influencial nodes and display 4 iterations (first column is full network))
+
+## positional arguments:
+
+Dataset "d" 
+
+smaller datasets:
+* example
+* aarhus
+* biogrid
+* celegans
+* europe
+* asia
+* sacchcere
+* northamerica
+* oceania
+* pierreauger_multiplex
+* southamerica
+
+Large dataset
+* homo 
+* dblp
+* obamainisrael
+* amazon
+* friendfeedtwitter
+* higgs
+* friendfeed
+
+Method "m"
+* i (iterative: calculate node influence before node removal in each iteration)
+* o (once off: only calculate/load influence at the beginning)
+
+Percentage "p":
+* 0 < p < 1 (percentage of node removal)
+
+Columns "c":
+* 1 <= p <= 5 (number of columns displayed on final output plots or number of iterations to remove the percentage of nodes specified in "p")
+
+--------------------------------------------------------------------------------
+
 Katana notes
 
 Manage jobs: https://unsw-restech.github.io/using_katana/running_jobs.html#managing-jobs-on-katana
