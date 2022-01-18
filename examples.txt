@@ -59,3 +59,6 @@ Test output
     [array('i', [4, 6]), array('i', [3, 6])], 
     [array('i', [5]), array('i', [3, 5])]
 ]
+
+
+python main.py example i 0.9 5
