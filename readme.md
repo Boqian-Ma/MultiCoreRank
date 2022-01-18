@@ -4,7 +4,7 @@ python version: 2.75
 
 1. Start new virtual environment
 2. ``pip install -r requirements.txt``
-3. download ``datasets`` folder from (too big to upload onto github)
+3. download ``datasets`` folder from teams (too big to upload onto github)
 4. place ``datasets`` in root folder
 
 
