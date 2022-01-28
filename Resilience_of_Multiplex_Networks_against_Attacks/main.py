@@ -63,9 +63,6 @@ def create_plots(multilayer_graph, plot_col, axs):
 
     return None
 
-
-
-
 def create_plot(multilayer_graph, axs):
 
     pearson_coe_matrix = multilayer_graph.pearson_correlation_coefficient()

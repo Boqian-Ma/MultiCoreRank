@@ -56,6 +56,8 @@ class MultilayerGraph:
 
         # create the empty adjacency list
         self.adjacency_list = [[array('i') for _ in self.layers_iterator] for _ in self.nodes_iterator]
+        
+        #print(self.adjacency_list)
 
         # map and oracle of the layers
         layers_map = {}
