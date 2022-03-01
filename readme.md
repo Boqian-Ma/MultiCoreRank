@@ -25,7 +25,7 @@ Run the following command from the folder `Resilience_of_Multiplex_Networks_agai
 
 Examples
 
-`python main.py example i 0.2 5` (iteratively removing top 20% of influencial nodes and display 4 iterations (first column is full network))
+`python main.py example o 0.2 5` (iteratively removing top 20% of influencial nodes and display 4 iterations (first column is full network))
 
 ## positional arguments:
 
@@ -222,3 +222,7 @@ Dowload: celegans.tar.gz (6.1 KB) (md5sum: bb4d97e3d74b171c095f1bced47335d2)
     Layers: 10
     Rerefence: V. Nicosia, V. Latora "Measuring and modelling correlations in multiplex networks", Phys. Rev. E 92, 032805 (2015) (Abstract - APS)
     Dowload: APS.tar.gz (47 MB) (md5sum: e551647048ae8035bb27b70788a15c94)
+
+
+Datasets
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/GSOPCK
