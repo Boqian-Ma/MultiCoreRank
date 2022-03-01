@@ -2,11 +2,14 @@ from os import error, getcwd
 from os.path import dirname
 from array import array
 import gc
-
 import itertools
-
 import numpy as np
 import scipy.stats
+import networkx as nx
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 class MultilayerGraph:
     # def __init__(self, dataset_path=None, dataset='multilayer_layer_core_decomposition'):
@@ -23,10 +26,13 @@ class MultilayerGraph:
 
         self.maximum_node = 0
         self.nodes_iterator = xrange(0)
-        self.adjacency_list = []
+        self.adjacency_list = None
 
         # Dataset source
         #self.dataset = dataset
+        self.networkx_layers = [] # Network x layers implementations
+
+        self.networkx_projection = None
 
         # if dataset_path has been specified
         if dataset_file is not None:
@@ -40,7 +46,7 @@ class MultilayerGraph:
 
     def load_dataset(self, dataset_file):
         # open the file
-        dataset_file = open(dirname(getcwd()) + '/datasets/' + dataset_file + '.txt')
+        dataset_file = open(dirname(getcwd()) + '/datasets/used_clean_datasets/' + dataset_file + '.txt')
         # read the first line of the file
         first_line = dataset_file.readline()
         split_first_line = first_line.split(' ')
@@ -57,14 +63,12 @@ class MultilayerGraph:
         # create the empty adjacency list
         self.adjacency_list = [[array('i') for _ in self.layers_iterator] for _ in self.nodes_iterator]
         
-        #print(self.adjacency_list)
-
         # map and oracle of the layers
         layers_map = {}
         layers_oracle = 0
 
         # for each line of the file
-        for index, line in enumerate(dataset_file):
+        for _, line in enumerate(dataset_file):
             # split the line
             split_line = line.split(' ')
             layer = int(split_line[0])
@@ -136,7 +140,7 @@ class MultilayerGraph:
             if flag is True:
                 node_count += 1
 
-        print(node_count)
+        # print(node_count)
 
         self.modified_number_of_nodes = node_count
 
@@ -213,6 +217,110 @@ class MultilayerGraph:
     def get_layer_mapping(self, layer):
         return self.layers_map[layer]
 
+    def _load_networkx_projection(self):
+
+        if self.dataset_file is not None:
+            # Create base graph
+            G = nx.Graph()
+            # Add all nodes
+            G.add_nodes_from([i for i in range(1, self.number_of_nodes + 1)])
+
+            # loop through all layers and add an edge
+            for layer in range(self.number_of_layers):
+                # Add edges in this layer
+                for from_node in range(1, len(self.adjacency_list)):
+                    for to_node in self.adjacency_list[from_node][layer]:
+                        if not G.has_edge(from_node, to_node):
+                            G.add_edge(from_node, to_node)
+            
+            self.networkx_projection = G
+
+            # Save graphs
+            
+            nx.draw_networkx(self.networkx_projection)
+            plt.savefig("graph_figures/{}_projection.png".format(self.dataset_file), format="png")
+            plt.clf()
+
+    def _load_networkx(self):
+        '''
+        Use the current adjancency list implement to create a list of 
+        networkX objects. Each object represents a layer in the 
+        multiplex network. 
+        '''
+        if self.dataset_file is not None and self.networkx_layers is not None:
+            self.networkx_layers = [] # Reset to empty list
+            # Create graph 
+            for layer in range(self.number_of_layers):
+                G = nx.Graph() # New graph
+                # create nodes
+                G.add_nodes_from([i for i in range(1, self.number_of_nodes + 1)])
+                # Add edges in this layer
+                for from_node in range(1, len(self.adjacency_list)):
+                    for to_node in self.adjacency_list[from_node][layer]:
+                        G.add_edge(from_node, to_node)
+                self.networkx_layers.append(G)
+
+            
+        # Save graphs
+        # for g in range(len(self.networkx)):
+        #     nx.draw_networkx(self.networkx[g])
+        #     plt.savefig("graph_figures/{}_{}.png".format(self.dataset_file, g), format="png")
+        #     plt.clf()
+    
+    def eigenvector_centrality(self):
+        '''
+        Calculate eigen centrality of the network
+        '''
+        self._load_networkx()
+        eigenvector_centrality_matrix = []
+
+        # print(self.networkx_layers)
+        
+        for layer_graph in self.networkx_layers:
+            # eigenvector_centrality_vector = nx.eigenvector_centrality(layer_graph, max_iter=1000)
+            eigenvector_centrality_vector = nx.eigenvector_centrality_numpy(layer_graph)
+            eigenvector_centrality_matrix.append(eigenvector_centrality_vector.values())
+
+        # Take transpose
+        eigenvector_centrality_matrix = np.asarray(eigenvector_centrality_matrix).T
+        eigenvector_centrality = {}
+        for node in range(len(eigenvector_centrality_matrix)):
+            eigenvector_centrality[node + 1] = sum(eigenvector_centrality_matrix[node])
+
+        # node_influene_map = {}
+
+        # for node in range(self.number_of_nodes):
+        #     node_influene_map[node + 1] = eigenvector_centrality[node] # plus because nodes are 1 indexed
+        # print(node_influene_map)
+
+        return eigenvector_centrality
+  
+    def betweenness_centrality(self):
+        self._load_networkx_projection()
+        # normalized=True
+        return nx.betweenness_centrality(self.networkx_projection, normalized=True)
+
+    def closeness_centrality(self):
+        self._load_networkx_projection()
+        return nx.closeness_centrality(self.networkx_projection)
+    
+    
+    def overlap_degree_rank(self):
+        '''
+        Calculate overlapping degree of network
+
+        Returns the influence
+        '''
+        map = {} # Result
+        for node in range(1, self.number_of_nodes + 1):
+            degree = 0
+            for layer in self.adjacency_list[node]:
+                degree += len(layer)
+            map[node] = degree
+    
+        # Sort by influence
+        # map = sorted(map.items(), key=operator.itemgetter(1), reverse=True)
+        return map
 
     def get_layer_node_degrees(self, layer1, layer2):
         '''
@@ -256,7 +364,7 @@ class MultilayerGraph:
 
         return corr_matrix
 
-
     def speaman_rank_correlation_coefficient(self):
         pass    
     
+   

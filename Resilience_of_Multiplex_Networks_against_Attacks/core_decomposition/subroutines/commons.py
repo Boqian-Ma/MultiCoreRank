@@ -85,18 +85,24 @@ def bottom_up_visit(multilayer_graph, start_vector, end_vector, cores, print_fil
                     processed_vectors.add(ancestor_vector)
 
 
-def post_processing(cores, distinct_flag, print_file):
-    if distinct_flag:
-        # filter distinct cores
-        filter_distinct_cores(cores)
-
-        if print_file is not None:
+def post_processing(cores, distinct_flag, print_file, multilayer_graph, influence):
+    if print_file is not None:
+        if distinct_flag:
+            # filter distinct cores
+            filter_distinct_cores(cores)
             print ('Printing cores...')
-
             # for each core
             for vector, k_core in cores.iteritems():
                 # print it
                 print_file.print_core(vector, k_core)
+        
+        print ('Sorting and Printing influence...')
+        # sort influence
+        influence_sorted_by_influence = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
+        if multilayer_graph.number_of_nodes ==  multilayer_graph.modified_number_of_nodes:
+            print_file.print_full_influence_rank(influence_sorted_by_influence)
+        else:
+            print_file.print_partial_influence_rank(influence_sorted_by_influence)
 
 
 def filter_distinct_cores(cores):

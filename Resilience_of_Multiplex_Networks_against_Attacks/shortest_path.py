@@ -8,7 +8,7 @@ import numpy as np
 
 
 from multilayer_graph.multilayer_graph import MultilayerGraph
-from betweeness import betweenness # betweeness centrality
+from Resilience_of_Multiplex_Networks_against_Attacks.centrality.betweeness import betweenness # betweeness centrality
 
 def main():
 

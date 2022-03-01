@@ -18,3 +18,5 @@ venv
 job.*
 
 .ipynb_checkpoints
+
+jobs

@@ -4,10 +4,9 @@ from multilayer_graph.multilayer_graph import MultilayerGraph
 import numpy as np
 import pytest
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from core_decomposition.breadth_first_v3 import breadth_first as bfs
-from utilities.print_console import print_dataset_name, print_dataset_info, print_dataset_source
 from utilities.print_file import PrintFile
 
 DATA_SET = "example"
@@ -113,53 +112,15 @@ def test_pearson_correlation_coefficient():
         # Remove nodes
         nodes_to_remove = [pair[0] for pair in influence[:remove_num_nodes]]
 
-        
-
-
-
-    # print(influence)
-    # print(len(influence) * percentage)
-    # print(remove_num_nodes)
-
     nodes_to_remove = [pair[0] for pair in influence[:remove_num_nodes]]
     print(nodes_to_remove)
     #assert(multilayer_graph.pearson_correlation_coefficient(1, 1) == 1)
 
 
 def test_playground():
-
-    multilayer_graph = MultilayerGraph("aps")
-
-    # true_layer_1 = [3, 5, 1, 3, 4, 2]
-    # true_layer_2 = [1, 5, 3, 1, 3, 3]
-
-    # test_layer_1, test_layer_2 = multilayer_graph.get_layer_node_degrees(0, 1)
-
-    # assert(true_layer_1 == test_layer_1)
-    # assert(true_layer_2 == test_layer_2)
-
-    # print(multilayer_graph.adjacency_list)
-
-    # test duplicates 
-
-    print(multilayer_graph.adjacency_list[82])
+    multilayer_graph = MultilayerGraph("example")
+    print(multilayer_graph.overlap_degree_rank())
 
 
-test_pearson_correlation_coefficient()
+test_playground()
 #test_example_pearson_coefficient()
-
-
-
-
-'''
-
-[
-    [array('i'), array('i')], 
-    [array('i', [2, 4, 5]), array('i', [2])], 
-    [array('i', [1, 3, 4, 5, 6]), array('i', [1, 3, 4, 5, 6])], 
-    [array('i', [2]), array('i', [2, 5, 6])], 
-    [array('i', [1, 2, 5]), array('i', [2])], 
-    [array('i', [1, 2, 4, 6]), array('i', [2, 3, 6])], 
-    [array('i', [2, 5]), array('i', [2, 3, 5])]
-]
-'''

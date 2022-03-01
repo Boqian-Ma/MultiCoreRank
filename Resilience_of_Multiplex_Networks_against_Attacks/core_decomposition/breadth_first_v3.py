@@ -1,6 +1,7 @@
 from __future__ import division
 from collections import defaultdict
 from array import array
+import errno
 from subroutines.core import core
 from subroutines.commons import *
 from utilities.time_measure import ExecutionTime
@@ -11,7 +12,7 @@ from os import getcwd
 from os.path import dirname
 
 
-def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
+def breadth_first(multilayer_graph, print_file, distinct_flag):
     # measures
     number_of_cores = 0
     number_of_computed_cores = 0
@@ -141,24 +142,11 @@ def breadth_first(multilayer_graph, print_file, distinct_flag, dataset_name):
     execution_time.end_algorithm()
     end_time = time.time()
 
-    influence = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
-
     print("Time taken: " + str(end_time-start_time))
-    
-    print_influence(influence, dirname(getcwd()) + "/output", dataset_name)
-    
     print_end_algorithm(execution_time.execution_time_seconds, number_of_cores, number_of_computed_cores)
-    post_processing(cores, distinct_flag, print_file)
+    post_processing(cores, distinct_flag, print_file, multilayer_graph, influence)
+    
     return influence
-
-
-def print_influence(influence, path, dataset_name):
-    #sort_influence = sorted(influence.items(), key = itemgetter(1), reverse=True)
-    # ASC by key, DESC by value
-    with open(os.path.join(path, "influence_" + dataset_name + "_v3.txt"), 'w+') as f:
-        for i in influence:
-            f.write(str(i[0]) + "\t" + str(i[1]) + "\n")
-
 
 def count_node_apprence_in_father_level(cores, multilayer_graph):
     count = {}
@@ -170,7 +158,6 @@ def count_node_apprence_in_father_level(cores, multilayer_graph):
                 else:
                     count[n] += 1
     return count
-
 
 def update_influence_by_core_vector(cores, inf_by_core_vector, influence):
     '''
