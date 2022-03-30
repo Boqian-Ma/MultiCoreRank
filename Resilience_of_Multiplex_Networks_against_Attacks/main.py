@@ -49,7 +49,7 @@ def main():
 
     # Create base plot
     fig, axs = plt.subplots(2, total_columns, figsize=(10 * total_columns, 20))
-
+    
     # Experiment loop
 
     if total_columns == 1:
@@ -57,7 +57,9 @@ def main():
         fig.suptitle('Dataset: {}'.format(data_set), fontsize=16)
         fig.suptitle('Dataset: {}, # of nodes: {}, # of layers: {} \n'.format(data_set, multilayer_graph.number_of_nodes, multilayer_graph.number_of_layers), fontsize=16)
         create_plot(multilayer_graph, axs)
-        plt.savefig("figures/{}_{}.png".format(data_set, total_columns), format="png")
+        # plt.savefig("figures/{}_{}.png".format(data_set, total_columns), format="png")
+        print_file.print_figure(plt, total_columns, percentage, iterative=False)
+
 
     elif type == "i":
         # Plotting iterative node removal

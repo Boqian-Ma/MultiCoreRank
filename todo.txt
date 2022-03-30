@@ -39,3 +39,9 @@ Aarhus datset
 
 
 https://manliodedomenico.com/data.php
+
+
+30/03/2022
+
+1. get disassortative networks and inspect behaviour
+2. write define new betweenness and closeness aggregate

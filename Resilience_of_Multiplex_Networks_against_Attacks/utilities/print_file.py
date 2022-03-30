@@ -66,8 +66,18 @@ class PrintFile:
             full_path = dirname(getcwd()) + "/output/figures/{}_{}_{}_iterative.png".format(self.data_path, total_columns, percentage)
         else:
             full_path = dirname(getcwd()) + "/output/figures/{}_{}_{}_once.png".format(self.data_path, total_columns, percentage)
+        
         self._create_file(full_path)
         plt.savefig(full_path, format="png")
+
+    def print_correlation_heatmap(self, plt):
+        '''
+        Save rank method correlation heatmap
+        '''
+        full_path = dirname(getcwd()) + "/output/figures/rank_heatmap/{}_rank_method_correlation.png".format(self.data_path)
+        self._create_file(full_path)
+        plt.savefig(full_path, format="png")
+
 
     def print_correlation(self, correlation):
         '''

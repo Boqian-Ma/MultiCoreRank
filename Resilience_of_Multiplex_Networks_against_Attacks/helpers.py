@@ -133,7 +133,7 @@ def get_influence_node_tuples(multilayer_graph, print_file):
             for line in f:
                 node_inf = line.strip().split("\t")
 
-                influence.append((node_inf[0], node_inf[1]))        
+                influence.append((int(node_inf[0]), float(node_inf[1])))        
         if len(influence) != multilayer_graph.number_of_nodes:
             raise ValueError("influence ranking file is incomplete: length of given file is different from length of graph nodes")
 

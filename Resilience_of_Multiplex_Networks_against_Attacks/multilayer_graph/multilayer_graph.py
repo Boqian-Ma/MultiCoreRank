@@ -237,9 +237,9 @@ class MultilayerGraph:
 
             # Save graphs
             
-            nx.draw_networkx(self.networkx_projection)
-            plt.savefig("graph_figures/{}_projection.png".format(self.dataset_file), format="png")
-            plt.clf()
+            # nx.draw_networkx(self.networkx_projection)
+            # plt.savefig("graph_figures/{}_projection.png".format(self.dataset_file), format="png")
+            # plt.clf()
 
     def _load_networkx(self):
         '''

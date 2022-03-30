@@ -1,3 +1,4 @@
+import argparse
 from scipy.stats import spearmanr
 from multilayer_graph.multilayer_graph import MultilayerGraph
 from utilities.print_file import PrintFile 
@@ -9,12 +10,15 @@ def sort_and_get_second_element(dict):
     '''
     Returns sorted key in a list
     '''
-    return [int(i[1]) for i in dict.items()]
+    return [i[1] for i in dict.items()]
 
 def main():
-    data_set = "aarhus"
+    print("Calculating centrality")
+    parser = argparse.ArgumentParser(description='Resilience of Multiplex Networks against Attacks: centrality methods correlation')
+    parser.add_argument('d', help='dataset')
+    args = parser.parse_args()
+    data_set = args.d
 
-    #start_time = time.time()
     start_time = time.time()
     
     # Load graph
@@ -24,13 +28,20 @@ def main():
     print_file = PrintFile(data_set)
     ranked_influence = get_influence_node_tuples(multilayer_graph, print_file)
 
+    # print(ranked_influence)
+
     ranked_influence = [i[1] for i in ranked_influence]
 
-    print(ranked_influence)
+    # print(ranked_influence)
 
+    #print(multilayer_graph.eigenvector_centrality())
+    print("Calculating Overlapping degree: {}".format(data_set))
     overlapping_degree = sort_and_get_second_element(multilayer_graph.overlap_degree_rank())
+    print("Calculating Eigenvector centrality")
     eigenvector_centrality = sort_and_get_second_element(multilayer_graph.eigenvector_centrality())
+    print("Calculating Betweenness centrality")
     betweenness_centrality = sort_and_get_second_element(multilayer_graph.betweenness_centrality())
+    print("Calculating Closeness centrality")
     closeness_centrality = sort_and_get_second_element(multilayer_graph.closeness_centrality())
 
     overlap_coef, _ = spearmanr(ranked_influence, overlapping_degree)
@@ -46,6 +57,7 @@ def main():
     total_time = "Time: {}\n".format(time.time() - start_time)
 
     coefs = [data_set + "\n", total_time, overlap, eigen, betweenness, closeness]
+
     print_file.print_correlation(coefs)
 
 if __name__ == "__main__":

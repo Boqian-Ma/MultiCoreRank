@@ -5,6 +5,8 @@ https://unsw-restech.github.io/using_katana/running_jobs.html
 To run:
 ```bash
 qsub job.pbs
+qsub centrality_job.pbs
+
 ```
 
 or 
