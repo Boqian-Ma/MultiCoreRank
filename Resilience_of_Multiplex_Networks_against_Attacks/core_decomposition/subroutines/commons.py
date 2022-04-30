@@ -99,7 +99,9 @@ def post_processing(cores, distinct_flag, print_file, multilayer_graph, influenc
         print ('Sorting and Printing influence...')
         # sort influence
         influence_sorted_by_influence = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
+        
         if multilayer_graph.number_of_nodes ==  multilayer_graph.modified_number_of_nodes:
+            # print_file.print_full_influence_rank(influence_sorted_by_influence)
             print_file.print_full_influence_rank(influence_sorted_by_influence)
         else:
             print_file.print_partial_influence_rank(influence_sorted_by_influence)

@@ -16,10 +16,10 @@ def correlation_mean(list, num_layers):
 
     try:
         mean_no_diag = (sum(list) -  num_layers) / float(len(list) -  num_layers)
+    
     except:
         mean_no_diag = float("NAN")
     
-    # Print mean values
     return mean_diag, mean_no_diag
 
 def create_plots(multilayer_graph, plot_col, axs):
@@ -67,7 +67,7 @@ def create_plot(multilayer_graph, axs):
 
     plt.colorbar(im, ax=axs[0])
 
-    mean_diag, mean_no_diag = correlation_mean(pearson_flat_list, multilayer_graph.number_of_layers)
+    mean_diag, mean_no_diag = correlation_mean(pearson_flat_list, len(pearson_coe_matrix))
 
     # Print mean values
     at = AnchoredText("Mean including diag: {:.2f}\nMean excluding diag: {:.2f}".format(mean_diag, mean_no_diag), prop=dict(size=15), frameon=True, loc='upper left')
@@ -116,14 +116,12 @@ def get_influence_node_ranking(multilayer_graph, print_file):
 def get_influence_node_tuples(multilayer_graph, print_file):
     '''
     Get node ranking from file
-
     returns a dict sorted by key
     '''
     if not os.path.isfile(print_file.full_influence_rank_file):
         # calculate influence and save output
-        print("")
+        # print("")
         influence = bfs(multilayer_graph, print_file, False)
-
         influence = [(k, v) for k, v in influence.items()]
 
     else:
@@ -132,11 +130,56 @@ def get_influence_node_tuples(multilayer_graph, print_file):
         with open(print_file.full_influence_rank_file, 'r') as f:
             for line in f:
                 node_inf = line.strip().split("\t")
-
                 influence.append((int(node_inf[0]), float(node_inf[1])))        
         if len(influence) != multilayer_graph.number_of_nodes:
             raise ValueError("influence ranking file is incomplete: length of given file is different from length of graph nodes")
-
         influence.sort(reverse=False)
 
+    return influence
+
+# TODO fix
+def get_influence_node_tuples_new(multilayer_graph, print_file):
+    '''
+    Get node ranking from file
+    returns a dict sorted by key
+    '''
+    if not os.path.isfile(print_file.full_influence_rank_file_new):
+        # calculate influence and save output
+        # print("")
+        influence = bfs(multilayer_graph, print_file, False)
+        influence = [(k, v) for k, v in influence.items()]
+        print("\nfuck me 2\n")
+
+        # need to save
+    else:
+        #load influence rank by reading file
+        influence = []
+        print("\nfuck me 1\n")
+        with open(print_file.full_influence_rank_file_new, 'r') as f:
+            for line in f:
+                node_inf = line.strip().split("\t")
+                influence.append((int(node_inf[0]), float(node_inf[1])))        
+        if len(influence) != multilayer_graph.number_of_nodes:
+            raise ValueError("influence ranking file is incomplete: length of given file is different from length of graph nodes")
+        influence.sort(reverse=False)
+    
+    return influence    
+
+def get_influence(multilayer_graph, print_file):
+    '''
+    Get a list of node influence from file. Only influence. 
+    '''
+    if not os.path.isfile(print_file.full_influence_rank_file):
+        # calculate influence and save output
+        # print("")
+        influence = bfs(multilayer_graph, print_file, False).values()
+    else:
+        #load influence rank by reading file
+        influence = []
+        with open(print_file.full_influence_rank_file, 'r') as f:
+            for line in f:
+                node_inf = line.strip().split("\t")
+                influence.append(float(node_inf[1])) 
+        if len(influence) != multilayer_graph.number_of_nodes:
+            raise ValueError("influence ranking file is incomplete: length of given file is different from length of graph nodes")
     return influence

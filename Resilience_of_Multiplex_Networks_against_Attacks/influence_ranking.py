@@ -2,7 +2,7 @@ import argparse
 # from scipy.stats import spearmanr
 from multilayer_graph.multilayer_graph import MultilayerGraph
 from utilities.print_file import PrintFile 
-from helpers import get_influence_node_tuples
+from helpers import get_influence_node_tuples, get_influence_node_tuples_new
 
 import time
 
@@ -18,15 +18,19 @@ def main():
     parser.add_argument('d', help='dataset')
     args = parser.parse_args()
     data_set = args.d
-
     # start_time = time.time()
-    
     # Load graph
     multilayer_graph = MultilayerGraph(data_set)
-
     # load or calculate influence
     print_file = PrintFile(data_set)
+    # print(multilayer_graph.adjacency_list)
+
+    # _ = get_influence_node_tuples(multilayer_graph, print_file)
+
     _ = get_influence_node_tuples(multilayer_graph, print_file)
+
+    
+
 
 if __name__ == "__main__":
     main()

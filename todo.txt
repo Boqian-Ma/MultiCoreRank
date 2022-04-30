@@ -42,6 +42,31 @@ https://manliodedomenico.com/data.php
 
 
 30/03/2022
+1. get disassortative networks and inspect behaviour --> running
+2. write define new betweenness and closeness aggregate --> done, done
+    update sheet
 
-1. get disassortative networks and inspect behaviour
-2. write define new betweenness and closeness aggregate
+
+
+[[array('i'), array('i')], 
+[array('i', [2, 4]), array('i', [2, 4])], 
+[array('i', [1, 4, 5, 6]), array('i', [1, 4, 5])], 
+[array('i', [5, 6]), array('i', [5, 6])], 
+[array('i', [1, 2, 5, 6]), array('i', [1, 2, 5])], 
+[array('i', [2, 3, 4]), array('i', [2, 3, 4, 6])], 
+[array('i', [2, 3, 4]), array('i', [3, 5])]]
+
+
+
+06/04/2022
+
+In terms of the "metric" of measuring the changes in network structures when top ranked nodes were attacked, we can analyze from three perspectives:
+
+1) the changes in the influence distribution 
+    (we can draw a histogram of distribution of the influence calculated by our method, when we remove say 1%, 2%, 3% of top ranked nodes),
+
+2) the changes in the ranking of the other nodes 
+    (we can calculate the spearman coefficient of the ranking of the remaining nodes in terms of before the removal and after the removal), and
+    
+3) the changes in the inner most core (we can draw a curve of the l1 norm 
+    (aka, the sum of the absolute values in a vector) of the innermost core, when say 1%, 2%, 3% of the top ranked nodes are removed).

@@ -19,23 +19,6 @@ def core(multilayer_graph, vector, ancestors_intersection, algorithm=None):
         # compute the degree in each layer considering only the set of active nodes
         delta[node] = [len([neighbor for neighbor in multilayer_graph.adjacency_list[node][layer] if neighbor in active_nodes]) for layer in multilayer_graph.layers_iterator]
         
-        # [len([neighbor for neighbor in multilayer_graph.adjacency_list[node][layer] if neighbor in active_nodes]) for layer in multilayer_graph.layers_iterator]
-
-        '''
-        list = []
-        for layer in multilayer_graph.layers_iterator:
-            neighbours = []
-
-            for neighbor in multilayer_graph.adjacency_list[node][layer]:
-                if neighbor in active_nodes:
-                    neighbours.append(neighbor)
-            
-            list.append(len(neighbours)) -> degree of node consideirng all neighbours
-        '''
-
-
-        # print "node " + str(node) + " delta " + str(delta)
-        
         in_core = True
 
         # for each layer

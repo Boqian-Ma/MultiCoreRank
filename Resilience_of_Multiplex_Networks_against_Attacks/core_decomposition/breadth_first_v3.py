@@ -7,9 +7,10 @@ from subroutines.commons import *
 from utilities.time_measure import ExecutionTime
 import os
 import time
-
+import numpy as np
 from os import getcwd
 from os.path import dirname
+import math
 
 
 def breadth_first(multilayer_graph, print_file, distinct_flag):
@@ -55,6 +56,7 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     influence = {}
     for node in multilayer_graph.get_nodes():
         influence[node] = 1
+        # influence[node] = 1/multilayer_graph.number_of_nodes
 
     level = 1
 
@@ -96,7 +98,6 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
                 # compute the core from it
                 k_core = core(multilayer_graph, vector, ancestors_intersection)
                 number_of_computed_cores += 1
-            # otherwise
             else:
                 # delete its entry from ancestors and continue
                 del ancestors[vector]
@@ -111,6 +112,9 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
                 number_of_cores += 1
                 print("core found...")
                 if print_file is not None and not distinct_flag:
+
+                    # print(k_core)
+
                     print_file.print_core(vector, k_core)
 
                 # compute its descendant vectors by plusing 1 on each element
@@ -206,19 +210,47 @@ def get_cores_with_node(node, cores, start_vector):
 
 def normalize(influence, target=1.0):
     '''
-    Normalise the values of a dictionary
+    Normalise a dictionary
     '''
     raw = sum(influence.values())
     factor = target/raw
     for node, inf in influence.items():
         influence[node] = float(inf) * factor
 
+def normalize_new(influence, nodes_to_normalise, target=1.0):
+    '''
+    Normalise the values of a dictionary
+    '''
+    # raw = sum(influence.values())
+
+    raw = 0
+    for node in nodes_to_normalise:
+        raw += influence[node]
+
+    # raw = len(nodes_to_normalise)
+
+    print("\n\n influence = {}\nraw = {} \n".format(influence, raw))
+
+    # find max influence from  lattice level above
+    max = 0
+    for node, inf in influence.items():
+        if node not in nodes_to_normalise and inf > max:
+            max = inf
+
+    factor = target/raw
+
+    for node, inf in influence.items():
+        if node in nodes_to_normalise:
+        # influence[node] = float(inf) * factor
+            influence[node] = np.longfloat(inf) * factor + max
 
 
 def get_influence_v3(influence, multilayer_graph, level, current_level_cores, father_level_cores, inf_by_core_vector, start_vector, current_level_ancestors):
     '''
     Main driver of finding influence in this graph
     '''
+    # print("yeet")
+    # print(current_level_ancestors)
 
     current_level_count = {}                  # Count how many times a node appeared in the level
     # Record number of appearence of each node on current lattice level
@@ -240,7 +272,8 @@ def get_influence_v3(influence, multilayer_graph, level, current_level_cores, fa
         influence[node] = 0
 
     # for nodes that are on the current level
-    for node, _ in current_level_count.items():        
+    for node, _ in current_level_count.items():
+        
         # find core vectors of cores that has node in them
         core_vectors_with_node = get_cores_with_node(node, current_level_cores, start_vector)
 
@@ -253,14 +286,26 @@ def get_influence_v3(influence, multilayer_graph, level, current_level_cores, fa
             for ancestor_core_vector in ancestor_core_vectors:
                 # calculate average core influence
                 average_father_core_avg_inf = calculate_average_core_influence(inf_by_core_vector[ancestor_core_vector])
+                if node == 1:
+                    print("before: core vector {}, ancestor vector {}, level {}, node {}, inf: {} temp: {} avg: {}".format(core_vector,ancestor_core_vector , level, node, influence[node], temp_influence[node], average_father_core_avg_inf))
                 influence[node] += level * temp_influence[node] * average_father_core_avg_inf
+                # influence[node] += (1/1+(math.exp(-level))) * temp_influence[node] * average_father_core_avg_inf
+
+                if node == 1:
+                    print("after: core vector {}, ancestor vector {}, level {}, node {}, inf: {} temp: {} avg: {}".format(core_vector,ancestor_core_vector , level, node, influence[node], temp_influence[node], average_father_core_avg_inf))
+
+    # if level == 5:
+    #     quit()
 
     if level == 1:
         del father_level_cores[start_vector]
         del current_level_cores[start_vector]
 
     # Normalise influence
+    # nodes_to_normalise = current_level_count.keys()
+
     normalize(influence, target=multilayer_graph.number_of_nodes)
+
 
 
 

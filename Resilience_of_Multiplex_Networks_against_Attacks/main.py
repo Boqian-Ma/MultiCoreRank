@@ -23,11 +23,11 @@ def main():
     parser = argparse.ArgumentParser(description='Resilience of Multiplex Networks against Attacks')
     parser.add_argument('d', help='dataset')
     parser.add_argument('m', help='method: "i"=iterative influence calculation, "o"=once off influence calculation', choices=["i", "o"])
-    parser.add_argument('p', help='percentage of node removal', type=float, choices=np.arange(0.0, 1.0, 0.1))
+    parser.add_argument('p', help='percentage of node removal', type=float, choices=np.arange(0.0, 1.0, 0.01))
     parser.add_argument('c', help='total columns displayed', type=int, choices=range(1, 6))
     args = parser.parse_args()
 
-    # e.g python main.py example i 0.9 5
+    # e.g python main.py aps_0_1_6_8_9 o 0.1 5
     
     data_set = args.d
     type = args.m
@@ -35,6 +35,10 @@ def main():
     # number of columns in the final output
     # total_columns - 1 is the number of times the percentage
     total_columns = args.c
+
+    # type = "i"
+    # percentage = 0.01
+    # total_columns = 5
 
     start_time = time.time()
     # Load graph
@@ -60,6 +64,7 @@ def main():
         # plt.savefig("figures/{}_{}.png".format(data_set, total_columns), format="png")
         print_file.print_figure(plt, total_columns, percentage, iterative=False)
 
+        # print(multilayer_graph.adjacency_list[1])
 
     elif type == "i":
         # Plotting iterative node removal

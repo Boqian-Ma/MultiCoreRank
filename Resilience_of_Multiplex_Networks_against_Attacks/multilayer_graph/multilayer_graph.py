@@ -1,3 +1,4 @@
+from ast import Raise
 from os import error, getcwd
 from os.path import dirname
 from array import array
@@ -8,6 +9,8 @@ import scipy.stats
 import networkx as nx
 
 import matplotlib
+
+# from Resilience_of_Multiplex_Networks_against_Attacks.core_decomposition.breadth_first_v3 import normalize
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -98,9 +101,7 @@ class MultilayerGraph:
         if from_node != to_node:
             # add the edge
             # Check if nodes are already linked to prevent duplicates
- 
-            # self.adjacency_list[from_node][layer].append(to_node)
-            # self.adjacency_list[to_node][layer].append(from_node)
+            # Only consider unweighted and undirected paths
 
             if to_node not in self.adjacency_list[from_node][layer] and from_node not in self.adjacency_list[to_node][layer]:
                 self.adjacency_list[from_node][layer].append(to_node)
@@ -128,23 +129,56 @@ class MultilayerGraph:
 
     # ****** update total number of nodes after node removal ******
     def _update_number_of_nodes(self):
+        '''
+        Only consider nodes that are active
+        '''
         node_count = 0
 
         for i in range(1, self.number_of_nodes + 1):
             flag = False
 
+            # if a node is active in a layer, we consider it as a node
             for j in range(self.number_of_layers):
                 if len(self.adjacency_list[i][j]) > 0:
                     flag = True
-
+            
             if flag is True:
                 node_count += 1
 
-        # print(node_count)
-
         self.modified_number_of_nodes = node_count
 
-       
+    def keep_layers(self, layers_to_keep):
+        '''
+        Remove all layers besides the onces in layers_to_keep
+        update information
+        '''
+
+        if len(layers_to_keep) > self.number_of_layers:
+            print("too many layers to keep lmao")
+            quit()
+
+        new_adjacency_list = []
+
+        new_adjacency_list = [[] for _ in self.nodes_iterator]
+
+        for node in range(self.number_of_nodes + 1):
+
+            for layer in range(self.number_of_layers):
+                if layer in layers_to_keep:
+                    # print(self.adjacency_list[node][layer])
+                    new_adjacency_list[node].append(self.adjacency_list[node][layer])
+
+        self.adjacency_list = new_adjacency_list
+        self.layers_iterator = xrange(len(layers_to_keep) + 1)
+        self.number_of_layers = len(layers_to_keep)
+
+
+        print("Unmodified {}".format(self.modified_number_of_nodes))
+        self._update_number_of_nodes()
+        print("modified {}".format(self.modified_number_of_nodes))
+
+
+        print(self.number_of_layers)
 
     # ****** Remove a list of node from the graph ******
     def remove_nodes(self, nodes):
@@ -274,36 +308,76 @@ class MultilayerGraph:
         self._load_networkx()
         eigenvector_centrality_matrix = []
 
-        # print(self.networkx_layers)
-        
         for layer_graph in self.networkx_layers:
             # eigenvector_centrality_vector = nx.eigenvector_centrality(layer_graph, max_iter=1000)
             eigenvector_centrality_vector = nx.eigenvector_centrality_numpy(layer_graph)
             eigenvector_centrality_matrix.append(eigenvector_centrality_vector.values())
-
+        
         # Take transpose
         eigenvector_centrality_matrix = np.asarray(eigenvector_centrality_matrix).T
         eigenvector_centrality = {}
         for node in range(len(eigenvector_centrality_matrix)):
             eigenvector_centrality[node + 1] = sum(eigenvector_centrality_matrix[node])
 
-        # node_influene_map = {}
-
-        # for node in range(self.number_of_nodes):
-        #     node_influene_map[node + 1] = eigenvector_centrality[node] # plus because nodes are 1 indexed
-        # print(node_influene_map)
-
         return eigenvector_centrality
   
     def betweenness_centrality(self):
+        '''
+        Calculate betweenness centrality of each layer and aggregate
+        '''
+        self._load_networkx()
+
+        betweeness_centrality_matrix = []
+
+        for layer_graph in self.networkx_layers:
+            # eigenvector_centrality_vector = nx.eigenvector_centrality(layer_graph, max_iter=1000)
+            betweeness_centrality_vector = nx.betweenness_centrality(layer_graph, normalized=True)
+            betweeness_centrality_matrix.append(betweeness_centrality_vector.values())
+        
+        # Take transpose
+        betweeness_centrality_matrix = np.asarray(betweeness_centrality_matrix).T
+        betweeness_centrality = {}
+
+        for node in range(len(betweeness_centrality_matrix)):
+            betweeness_centrality[node + 1] = sum(betweeness_centrality_matrix[node])
+
+        return betweeness_centrality
+
+    def closeness_centrality(self):
+        '''
+        Calculate betweenness centrality of each layer and aggregate
+        '''
+        self._load_networkx()
+
+        closeness_centrality_matrix = []
+        
+        for layer_graph in self.networkx_layers:
+            # eigenvector_centrality_vector = nx.eigenvector_centrality(layer_graph, max_iter=1000)
+            closeness_centrality_vector = nx.closeness_centrality(layer_graph)
+            closeness_centrality_matrix.append(closeness_centrality_vector.values())
+        
+        # Take transpose
+        closeness_centrality_matrix = np.asarray(closeness_centrality_matrix).T
+        closeness_centrality = {}
+
+        for node in range(len(closeness_centrality_matrix)):
+            closeness_centrality[node + 1] = sum(closeness_centrality_matrix[node])
+
+        return closeness_centrality
+
+    def betweenness_centrality_projection(self):
         self._load_networkx_projection()
         # normalized=True
         return nx.betweenness_centrality(self.networkx_projection, normalized=True)
 
-    def closeness_centrality(self):
+    def closeness_centrality_projection(self):
+        '''
+        Calculate closeness centrality on projection network
+        '''
         self._load_networkx_projection()
         return nx.closeness_centrality(self.networkx_projection)
     
+
     
     def overlap_degree_rank(self):
         '''
@@ -335,7 +409,6 @@ class MultilayerGraph:
             degrees1.append(len(self.adjacency_list[node][layer1]))
             degrees2.append(len(self.adjacency_list[node][layer2]))
         
-        #print(degrees1, degrees2)
         return degrees1, degrees2
     
     def pearson_correlation_coefficient(self):
@@ -348,23 +421,55 @@ class MultilayerGraph:
         combinations = list(itertools.combinations(layers, 2))
 
         corr_matrix = [[0] * self.number_of_layers for i in range(self.number_of_layers)]
-
         # initialise diaganol for heatmap
         for i in range(self.number_of_layers):
             corr_matrix[i][i] = 1
 
         for layer1, layer2 in combinations:
             x1, x2 = self.get_layer_node_degrees(layer1, layer2)
-
-            #print(x1, x2)
-
             corr_matrix[layer1][layer2] = corr_matrix[layer2][layer1] = scipy.stats.pearsonr(x1, x2)[0]
-
             # will return nan results
 
         return corr_matrix
 
-    def speaman_rank_correlation_coefficient(self):
-        pass    
+    def pearson_correlation_coefficient_find_negatives(self):
+        '''
+        Compute pearson correlation of a graph
+        '''
+        layers = [x for x in range(self.number_of_layers)]
+
+        # Get layers combination pairs
+        combinations = list(itertools.combinations(layers, 2))
+
+        corr_matrix = [[0] * self.number_of_layers for i in range(self.number_of_layers)]
+        # initialise diaganol for heatmap
+        for i in range(self.number_of_layers):
+            corr_matrix[i][i] = 1
+
+
+        disassortative_pairs = ["{}\n".format(self.dataset_file)]
+
+        count = {}
+
+        for layer1, layer2 in combinations:
+            x1, x2 = self.get_layer_node_degrees(layer1, layer2)
+            corr = corr_matrix[layer2][layer1] = scipy.stats.pearsonr(x1, x2)[0]
+
+            if corr < 0:
+                if "{} {} {}\n".format(layer2, layer1, corr) in disassortative_pairs:
+                    continue
+                
+                disassortative_pairs.append("{} {} {}\n".format(layer1, layer2, corr))
+
+                if layer1 in count:
+                    count[layer1] += 1
+                else: 
+                    count[layer1] = 1
+        
+        # TODO: Clean up
+        # sort
+        print(count)
+        return disassortative_pairs, count
+
     
    

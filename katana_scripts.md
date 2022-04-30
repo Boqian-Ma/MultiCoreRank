@@ -6,7 +6,8 @@ To run:
 ```bash
 qsub job.pbs
 qsub centrality_job.pbs
-
+qsub find_disassortative_datasets_job.pbs
+qsub one_heat_map_job.pbs
 ```
 
 or 
@@ -22,7 +23,7 @@ qstat -u $USER
 
 Delete a job:
 ```bash
-qdel 2523605
+qdel 2575766
 ```
 
 ```bash
