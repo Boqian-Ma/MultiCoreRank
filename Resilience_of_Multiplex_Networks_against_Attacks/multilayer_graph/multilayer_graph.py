@@ -49,7 +49,8 @@ class MultilayerGraph:
 
     def load_dataset(self, dataset_file):
         # open the file
-        dataset_file = open(dirname(getcwd()) + '/datasets/used_clean_datasets/' + dataset_file + '.txt')
+        # dataset_file = open(dirname(getcwd()) + '/datasets/used_clean_datasets/' + dataset_file + '.txt')
+        dataset_file = open(dirname(getcwd()) + '/useful_datasets/' + dataset_file + '.txt')
         # read the first line of the file
         first_line = dataset_file.readline()
         split_first_line = first_line.split(' ')
