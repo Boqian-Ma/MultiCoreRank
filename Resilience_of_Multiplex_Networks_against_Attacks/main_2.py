@@ -15,12 +15,11 @@ from utilities.print_file import PrintFile
 
 from helpers import create_plot, create_plots, get_influence_node_ranking, get_influence, get_influence_node_tuples, get_influence_node_tuples_new
 
-
 import pandas as pd
 
 def main(data_set):
     '''
-    Yeet
+    Influence distribution plots
     '''
     # data_set = "oceania"
     total_columns = 2

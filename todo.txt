@@ -70,3 +70,18 @@ In terms of the "metric" of measuring the changes in network structures when top
     
 3) the changes in the inner most core (we can draw a curve of the l1 norm 
     (aka, the sum of the absolute values in a vector) of the innermost core, when say 1%, 2%, 3% of the top ranked nodes are removed).
+
+
+
+
+17/05/2022
+
+1. Find disassortative graphs
+    Files: Assortative.py
+
+2. rerun experiments
+    number of cores: number_of_cores_plot.py
+    inner core: inner_most_core_plot.py, inner_most_core.py
+    correlation after removal
+    spearman rank correlation after removal 
+

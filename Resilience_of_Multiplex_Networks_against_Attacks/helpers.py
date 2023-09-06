@@ -121,7 +121,7 @@ def get_influence_node_tuples(multilayer_graph, print_file):
     if not os.path.isfile(print_file.full_influence_rank_file):
         # calculate influence and save output
         # print("")
-        influence = bfs(multilayer_graph, print_file, False)
+        influence, _, _ = bfs(multilayer_graph, print_file, False)
         influence = [(k, v) for k, v in influence.items()]
 
     else:
@@ -131,6 +131,9 @@ def get_influence_node_tuples(multilayer_graph, print_file):
             for line in f:
                 node_inf = line.strip().split("\t")
                 influence.append((int(node_inf[0]), float(node_inf[1])))        
+        
+        # print(influence)
+        
         if len(influence) != multilayer_graph.number_of_nodes:
             raise ValueError("influence ranking file is incomplete: length of given file is different from length of graph nodes")
         influence.sort(reverse=False)
@@ -148,13 +151,13 @@ def get_influence_node_tuples_new(multilayer_graph, print_file):
         # print("")
         influence = bfs(multilayer_graph, print_file, False)
         influence = [(k, v) for k, v in influence.items()]
-        print("\nfuck me 2\n")
+        # print("\nfuck me 2\n")
 
         # need to save
     else:
         #load influence rank by reading file
         influence = []
-        print("\nfuck me 1\n")
+        # print("\nfuck me 1\n")
         with open(print_file.full_influence_rank_file_new, 'r') as f:
             for line in f:
                 node_inf = line.strip().split("\t")

@@ -2,17 +2,15 @@
 Iteratively remove nodes and find influence distributions
 
 '''
-
 import argparse
 import errno
 import math
 from posixpath import dirname
 from resource import error
+import sys
 import time
 import os
-
 import copy
-
 import numpy as np
 import matplotlib
 import pandas as pd
@@ -25,8 +23,6 @@ from core_decomposition.breadth_first_v3 import breadth_first as bfs
 from utilities.print_file import PrintFile 
 
 from helpers import correlation_mean, create_plot, create_plots, get_influence_node_ranking, get_influence_node_tuples
-
-
 from scipy import stats
 
 
@@ -41,7 +37,6 @@ def main(data_set, percentage):
     # parser.add_argument('c', help='total columns displayed', type=int, choices=range(1, 6))
     # args = parser.parse_args()
 
-
     start_time = time.time()
     # Load graph
     multilayer_graph = MultilayerGraph(data_set)
@@ -50,8 +45,6 @@ def main(data_set, percentage):
 
     # Total removing nodes
     # Find one percent
-
-
 
     one_percent = int(math.floor(0.01 * multilayer_graph.number_of_nodes))
 
@@ -98,23 +91,34 @@ def main(data_set, percentage):
 if __name__ == "__main__":
 
     # datasets = ["northamerica_0_2_13_14_11", "southamerica_9_17_21_52"]
-    datasets = ["homo", "biogrid"]
+    # datasets = ["homo", "biogrid"]
     # datasets = ["moscowathletics2013_multiplex"]
-    datasets = ["northamerica_0_2_13_14_11", "southamerica_9_17_21_52", "celegans", "europe", "homo", "biogrid"]
+    # datasets = ["northamerica_0_2_13_14_11", "southamerica_9_17_21_52", "celegans", "europe", "homo", "biogrid"]
     # datasets = ["celegans"]
     # datasets = ["example"]
 
+    # datasets = ["southamerica_0_2_3_4_5_6_7_8_9_10_11_12_13_14_16_17_20_21_22"]
+
+    # datasets = ["southamerica_0_2_4_5_6_8_9_10_12_13_14_16_17_20_21"]
+
+    # datasets = ["southamerica_0_2_4_5_6_8_9_10_12_14_16_17_20"]
+
+    # datasets = ["southamerica_0_2_4_5_6_8_9"]
+
+    # datasets = ["arxiv_netscience_multiplex_3_11"]
+
+    # datasets = ["arxiv_netscience_multiplex"]
+
+    datasets = [sys.argv[1]]
     # datasets = ["celegans"]
     correlations = []
-
-    start = 1
-    end = 1
-
-    runs = [10,20,30]
+    # start = 1
+    # end = 1
+    runs = [0,1,2,3,10,20,30]
 
     for dataset in datasets:
         results = [dataset]
-        for i in [0]:
+        for i in runs:
             res = main(dataset, i)
             results.append(res)
 
@@ -130,6 +134,7 @@ if __name__ == "__main__":
         with open(full_path, 'w+') as f:
             f.write(str(results))
 
-    print(correlations)
+    print(results[1])
+    # print(correlations)
 
     

@@ -12,7 +12,11 @@ class PrintFile:
 
         self._create_file(dirname(getcwd()) + '/output/full_core_decomposition/' + dataset_path + '_core_decomposition_full.txt')
         self.full_core_decomposition_file = open(dirname(getcwd()) + '/output/full_core_decomposition/' + dataset_path + '_core_decomposition_full.txt', 'w+')
+
+        self._create_file(dirname(getcwd()) + '/output/inner_most_cores/' + dataset_path + '_inner_most_cores.txt')
+        self.inner_most_cores_file = open(dirname(getcwd()) + '/output/inner_most_cores/' + dataset_path + '_inner_most_cores.txt', 'w+')
         
+
         self.partial_core_decomposition_file = dirname(getcwd()) + '/output/partial_core_decomposition/' + dataset_path + '_core_decomposition_partial.txt'   
         self.full_influence_rank_file = dirname(getcwd()) + '/output/full_influence_ranking/' + dataset_path + '_influence_ranking_full.txt'
         
@@ -54,6 +58,28 @@ class PrintFile:
 
     #     pass
 
+    def print_inner_most_core_map(self, s, extension):
+        '''
+        Print a map of deepest level and percentage of removal
+        '''
+
+        full_path = dirname(getcwd()) + "/output/inner_most_cores_map/{}_{}.txt".format(self.data_path, extension)
+        self._create_file(full_path)
+
+        with open(full_path, 'w+') as outfile:
+            outfile.write(s)
+
+    def print_inner_most_core_map_fast(self, s, extension):
+        '''
+        Print a map of deepest level and percentage of removal
+        '''
+
+        full_path = dirname(getcwd()) + "/output/inner_most_cores_map_fast/{}_{}.txt".format(self.data_path, extension)
+        self._create_file(full_path)
+
+        with open(full_path, 'w+') as outfile:
+            outfile.write(s)
+
 
     def print_core(self, vector, k_core):
         # sort the nodes of the core
@@ -88,6 +114,55 @@ class PrintFile:
         full_path = dirname(getcwd()) + "/output/figures/influence_distribution/{}.png".format(figure_name)
         self._create_file(full_path)
         plt.savefig(full_path, format="png")
+
+    
+    def print_loocv_cdf(self, plt, figure_name):
+        full_path = dirname(getcwd()) + "/Resilience_of_Multiplex_Networks_against_Attacks/output/figures/loocv/{}.png".format(figure_name)
+        self._create_file(full_path)
+
+        print(full_path)
+        plt.savefig(full_path, format="png")
+
+
+    def print_inner_most_core_plot(self, plt, figure_name):
+
+        full_path = dirname(getcwd()) + "/output/figures/inner_most_cores/{}_inner_most.png".format(figure_name)
+        self._create_file(full_path)
+        plt.savefig(full_path, format="png")
+
+    def print_number_of_cores_plot(self, plt, figure_name):
+
+        full_path = dirname(getcwd()) + "/output/figures/number_of_cores/{}_number_cores.png".format(figure_name)
+        self._create_file(full_path)
+        plt.savefig(full_path, format="png")
+
+    def print_inner_most_core_plot_line(self, plt, figure_name):
+
+        full_path = dirname(getcwd()) + "/output/figures/inner_most_cores/{}_line.png".format(figure_name)
+        self._create_file(full_path)
+        plt.savefig(full_path, format="png")
+
+    def print_cdf(self, plt, figure_name):
+        '''
+        print cdf
+        '''
+        full_path = dirname(getcwd()) + "/output/figures/cdf/{}.png".format(figure_name)
+        self._create_file(full_path)
+        plt.savefig(full_path, format="png")
+
+    def print_inner_most_cores(self, vector, k_core, dataset):
+        # sort the nodes of the core
+        sorted_k_core = list(k_core)
+        sorted_k_core.sort()
+
+        self.inner_most_cores_file.write(str(vector) + '\t' + str(len(sorted_k_core)) + '\t' + str(sorted_k_core).replace('[', '').replace(']','') + '\n')
+
+        # full_path = dirname(getcwd()) + "/output/inner_most_cores/{}.txt".format(dataset)
+        # self._create_file(full_path)
+
+        # # write the core to the output file
+        # with open(full_path, 'w+') as file:
+        #     file.write(str(vector) + '\t' + str(len(sorted_k_core)) + '\t' + str(sorted_k_core).replace('[', '').replace(']','') + '\n')
 
 
     def print_figure(self, plt, total_columns, percentage, iterative=False, flag=False):
@@ -155,7 +230,14 @@ class PrintFile:
         self._create_file(full_path)
 
         with open(full_path, 'w+') as f:
-            f.writelines(count)         
+            f.writelines(count)      
+
+    def print_count_pos_layers(self, count):
+        full_path = dirname(getcwd()) + "/output/disassortative_layers/{}_pos_layers_count.txt".format(self.data_path)
+        self._create_file(full_path)
+
+        with open(full_path, 'w+') as f:
+            f.writelines(count)     
 
     def print_negative_correlation_layers(self, layers):
         '''
@@ -167,6 +249,16 @@ class PrintFile:
         with open(full_path, 'w+') as f:
             f.writelines(layers)        
 
+    def print_positive_correlation_layers(self, layers):
+        '''
+        print layer pair with negative correlation
+        '''
+        full_path = dirname(getcwd()) + "/output/disassortative_layers/{}_pos_layers.txt".format(self.data_path)
+        self._create_file(full_path)
+
+        with open(full_path, 'w+') as f:
+            f.writelines(layers)    
+
     def print_average_correlation_layers(self, dictionary):
         '''
         print average layerwise correlation for each layer
@@ -176,3 +268,10 @@ class PrintFile:
 
         with open(full_path, 'w+') as f:
             json.dump(dictionary, f, indent=4)
+
+
+    def print_average_ranking(self, dictionary):
+        '''
+            Print average ranking from LOOCV
+        '''
+        pass

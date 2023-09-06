@@ -1,4 +1,4 @@
-qsub -I -l select=1:ncpus=16:mem=124gb,walltime=12:00:00
+qsub -I -l select=1:ncpus=40:mem=124gb,walltime=5:00:00
 
 python main.py biogrid i 0.1 5
 python main.py biogrid o 0.1 5

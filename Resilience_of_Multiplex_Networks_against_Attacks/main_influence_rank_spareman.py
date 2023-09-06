@@ -31,8 +31,6 @@ def main(data_set):
     '''
     Main function for finding heatmap and layer-wise pearson correlation
     '''
-   
-
     type = "i"
     percentage = 0.01
     # number of columns in the final output
@@ -100,25 +98,22 @@ def main(data_set):
             # remove nodes
             nodes_to_remove = [pair[0] for pair in influences_sorted[:remove_nodes_per_iteration]]
 
-            print(nodes_to_remove)
-            print("before removal")
-            print(multilayer_graph.modified_number_of_nodes)
-            print(len(cache_nodes))
-
-            # TODO Not a bug, but a feature. Need to only consider nodes that are active, remove from list nodes that are in active
+            # print(nodes_to_remove)
+            # print("before removal")
+            # print(multilayer_graph.modified_number_of_nodes)
+            # print(len(cache_nodes))
 
             multilayer_graph.remove_nodes(nodes_to_remove)
 
             print("after removal")
             print(multilayer_graph.modified_number_of_nodes)
 
-
             # calculate new ranking 
-            influences = bfs(multilayer_graph, print_file, False)
+            influences, _ ,_ = bfs(multilayer_graph, print_file, False)
             # full graph influences
             influences_sorted = sorted(influences.items(), key=lambda x: (-x[1], x[0]))
 
-            print(influences)
+            # print(influences)
 
             curr_nodes = influences.items()
 
@@ -140,15 +135,15 @@ def main(data_set):
             cache_nodes = remove_items_with_keys(node_difference, cache_nodes)
             
 
-            print(cache_nodes)
-            print(influences.items())
+            # print(cache_nodes)
+            # print(influences.items())
 
             assert len(cache_nodes) == len(influences)
 
             rho = calculate_spareman_correlation(cache_nodes, curr_nodes)
             rhos.append(rho)
-
-            print("number of nodes left = {}".format(multilayer_graph.modified_number_of_nodes))
+            
+            # print("number of nodes left = {}".format(multilayer_graph.modified_number_of_nodes))
             print(rho)
 
         return rhos

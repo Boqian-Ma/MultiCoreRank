@@ -13,6 +13,8 @@ qsub one_heat_map_job.pbs
 or 
 ```
 qsub -l select=1:ncpus=24:mem=248gb,walltime=12:00:00 job_2.pbs
+
+qsub -I -l select=1:ncpus=8:mem=64gb,walltime=4:00:00
 ```
 
 List my jobs:

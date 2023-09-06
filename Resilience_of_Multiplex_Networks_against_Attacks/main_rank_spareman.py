@@ -8,6 +8,7 @@ import errno
 import math
 from posixpath import dirname
 from resource import error
+import sys
 import time
 import os
 
@@ -108,11 +109,11 @@ def main(data_set, percentage):
         print(multilayer_graph.modified_number_of_nodes)
 
         # calculate new ranking 
-        influences = bfs(multilayer_graph, print_file, False)
+        influences, _, _ = bfs(multilayer_graph, print_file, False)
         # full graph influences
         influences_sorted = sorted(influences.items(), key=lambda x: (-x[1], x[0]))
 
-        print(influences)
+        # print(influences)
 
         curr_nodes = influences.items()
 
@@ -128,21 +129,21 @@ def main(data_set, percentage):
         # remove isolated nodes
         # find union of nodes to remove and isolated nodes
         # remove nodes from cache
-        print(node_difference)
-        print(cache_nodes)
+        # print(node_difference)
+        # print(cache_nodes)
 
         cache_nodes = remove_items_with_keys(node_difference, cache_nodes)
     
-        print(cache_nodes)
-        print(influences.items())
+        # print(cache_nodes)
+        # print(influences.items())
 
         assert len(cache_nodes) == len(influences)
 
         rho = calculate_spareman_correlation(cache_nodes, curr_nodes)
 
-        print("\n{}\n".format(cache_nodes))
+        # print("\n{}\n".format(cache_nodes))
 
-        print("\n{}\n".format(curr_nodes))
+        # print("\n{}\n".format(curr_nodes))
 
         res.append(rho)
 
@@ -188,13 +189,13 @@ if __name__ == "__main__":
     # datasets = ["example"]
 
     # datasets = ["celegans"]
-    datasets = ["southamerica_9_17_21_52"]
+    datasets = [sys.argv[1]]
 
     correlations = []
 
     for dataset in datasets:
         results = [dataset]
-        for i in [10,20,30]:
+        for i in [1,2,3, 10,20,30]:
             res, num_nodes = main(dataset, i)
             results.append((res,num_nodes) )
 

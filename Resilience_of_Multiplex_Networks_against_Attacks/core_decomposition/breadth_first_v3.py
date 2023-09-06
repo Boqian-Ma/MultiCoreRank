@@ -30,6 +30,8 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     cores = {}
     cores[start_vector] = array('i', multilayer_graph.get_nodes())
 
+    inner_most_cores = []
+
     # core [0]
     if print_file is not None and not distinct_flag:
         print_file.print_core(start_vector, array('i', multilayer_graph.get_nodes()))
@@ -93,6 +95,9 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
                 level += 1
             
             ancestors_intersection = build_ancestors_intersection(ancestors[vector], cores, descendants_count, distinct_flag, multilayer_graph=multilayer_graph)
+            
+            # print(ancestors)
+
             # if the intersection of its ancestor cores is not empty
             if len(ancestors_intersection) > 0:
                 # compute the core from it
@@ -100,6 +105,8 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
                 number_of_computed_cores += 1
             else:
                 # delete its entry from ancestors and continue
+                # print("print ancestors")
+                # print(ancestors)
                 del ancestors[vector]
                 continue
 
@@ -110,7 +117,7 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
                 # update influce by level by node
 
                 number_of_cores += 1
-                print("core found...")
+                # print("core found...")
                 if print_file is not None and not distinct_flag:
 
                     # print(k_core)
@@ -150,7 +157,7 @@ def breadth_first(multilayer_graph, print_file, distinct_flag):
     print_end_algorithm(execution_time.execution_time_seconds, number_of_cores, number_of_computed_cores)
     post_processing(cores, distinct_flag, print_file, multilayer_graph, influence)
     
-    return influence
+    return influence, level - 1, number_of_cores
 
 def count_node_apprence_in_father_level(cores, multilayer_graph):
     count = {}
@@ -286,13 +293,13 @@ def get_influence_v3(influence, multilayer_graph, level, current_level_cores, fa
             for ancestor_core_vector in ancestor_core_vectors:
                 # calculate average core influence
                 average_father_core_avg_inf = calculate_average_core_influence(inf_by_core_vector[ancestor_core_vector])
-                if node == 1:
-                    print("before: core vector {}, ancestor vector {}, level {}, node {}, inf: {} temp: {} avg: {}".format(core_vector,ancestor_core_vector , level, node, influence[node], temp_influence[node], average_father_core_avg_inf))
+                # if node == 1:
+                    # print("before: core vector {}, ancestor vector {}, level {}, node {}, inf: {} temp: {} avg: {}".format(core_vector,ancestor_core_vector , level, node, influence[node], temp_influence[node], average_father_core_avg_inf))
                 influence[node] += level * temp_influence[node] * average_father_core_avg_inf
                 # influence[node] += (1/1+(math.exp(-level))) * temp_influence[node] * average_father_core_avg_inf
 
-                if node == 1:
-                    print("after: core vector {}, ancestor vector {}, level {}, node {}, inf: {} temp: {} avg: {}".format(core_vector,ancestor_core_vector , level, node, influence[node], temp_influence[node], average_father_core_avg_inf))
+                # if node == 1:
+                #     print("after: core vector {}, ancestor vector {}, level {}, node {}, inf: {} temp: {} avg: {}".format(core_vector,ancestor_core_vector , level, node, influence[node], temp_influence[node], average_father_core_avg_inf))
 
     # if level == 5:
     #     quit()
@@ -304,7 +311,7 @@ def get_influence_v3(influence, multilayer_graph, level, current_level_cores, fa
     # Normalise influence
     # nodes_to_normalise = current_level_count.keys()
 
-    normalize(influence, target=multilayer_graph.number_of_nodes)
+    normalize(influence, target=multilayer_graph.modified_number_of_nodes)
 
 
 

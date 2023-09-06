@@ -49,7 +49,8 @@ class MultilayerGraph:
 
     def load_dataset(self, dataset_file):
         # open the file
-        dataset_file = open(dirname(getcwd()) + '/datasets/used_clean_datasets/' + dataset_file + '.txt')
+        dataset_file = open(dirname(getcwd()) + '/Resilience_of_Multiplex_Networks_against_Attacks/used_clean_datasets/' + dataset_file + '.txt')
+        # dataset_file = open(dirname(getcwd()) + '/datasets/disassortative_datasets/garbage_northamerica/' + dataset_file + '.txt')
         # read the first line of the file
         first_line = dataset_file.readline()
         split_first_line = first_line.split(' ')
@@ -455,6 +456,7 @@ class MultilayerGraph:
             x1, x2 = self.get_layer_node_degrees(layer1, layer2)
             corr = corr_matrix[layer2][layer1] = scipy.stats.pearsonr(x1, x2)[0]
 
+            # if two layers are disassortative
             if corr < 0:
                 if "{} {} {}\n".format(layer2, layer1, corr) in disassortative_pairs:
                     continue
@@ -468,8 +470,59 @@ class MultilayerGraph:
         
         # TODO: Clean up
         # sort
-        print(count)
+        # print(count)
         return disassortative_pairs, count
+
+    def pearson_correlation_coefficient_find_positives(self):
+        '''
+        Compute pearson correlation of a graph
+        '''
+        layers = [x for x in range(self.number_of_layers)]
+
+        # Get layers combination pairs
+        combinations = list(itertools.permutations(layers, 2))
+
+        corr_matrix = [[0] * self.number_of_layers for i in range(self.number_of_layers)]
+        # initialise diaganol for heatmap
+        for i in range(self.number_of_layers):
+            corr_matrix[i][i] = 1
+
+
+        # disassortative_pairs = ["{}\n".format(self.dataset_file)]
+        disassortative_pairs = []
+
+        count = {}
+
+        for layer1, layer2 in combinations:
+            x1, x2 = self.get_layer_node_degrees(layer1, layer2)
+            corr = corr_matrix[layer2][layer1] = scipy.stats.pearsonr(x1, x2)[0]
+
+            # if two layers are disassortative
+            if corr > 0:
+
+                if layer1 in count:
+                    count[layer1] += 1
+                else: 
+                    count[layer1] = 1
+
+                # if "{} {} {}\n".format(layer2, layer1, corr) in disassortative_pairs:
+                #     continue
+                
+                # disassortative_pairs.append("{} {} {}\n".format(layer1, layer2, corr))
+                disassortative_pairs.append((layer1, layer2, corr))
+        
+        disassortative_pairs = sorted(disassortative_pairs, key=lambda x: (-x[2], x[0]))  
+
+        
+        s = []
+
+        for i in disassortative_pairs:
+            s.append("{} {} {}\n".format(i[0], i[1], i[2]))
+
+        # TODO: Clean up
+        # sort
+        # print(count)
+        return s, count
 
     
    

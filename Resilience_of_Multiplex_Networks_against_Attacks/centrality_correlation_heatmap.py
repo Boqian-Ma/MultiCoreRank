@@ -12,7 +12,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-
 def sort_and_get_second_element(dict):
     '''
     Returns sorted key in a list
