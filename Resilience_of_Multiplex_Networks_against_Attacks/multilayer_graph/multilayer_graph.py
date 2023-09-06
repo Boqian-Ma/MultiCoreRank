@@ -50,7 +50,6 @@ class MultilayerGraph:
     def load_dataset(self, dataset_file):
         # open the file
         dataset_file = open(dirname(getcwd()) + '/Resilience_of_Multiplex_Networks_against_Attacks/used_clean_datasets/' + dataset_file + '.txt')
-        # dataset_file = open(dirname(getcwd()) + '/datasets/disassortative_datasets/garbage_northamerica/' + dataset_file + '.txt')
         # read the first line of the file
         first_line = dataset_file.readline()
         split_first_line = first_line.split(' ')
