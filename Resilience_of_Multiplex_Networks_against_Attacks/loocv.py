@@ -77,7 +77,7 @@ def calculate_average_ranking(ranking_dict):
 # def plot_loocv
 
 
-def plot_loocv(data, print_file, figure_name):
+def plot_loocv_area(data, print_file, figure_name, fig_text):
 
     # plt.rcParams["figure.figsize"] = [7.50, 3.50]
     # plt.rcParams["figure.autolayout"] = True
@@ -130,9 +130,7 @@ def plot_loocv(data, print_file, figure_name):
     # ax.plot(x_p, positive, color='C0', linewidth=3)
     # ax.plot(x_n, negative, color='C0', linewidth=3)
 
-    
-
-    ax.plot(x_n + x_p, negative + positive, color='C0', linewidth=3)
+    ax.plot(np.concatenate((x_n,x_p)), np.concatenate((negative,positive)), color='C0', linewidth=3)
 
     ax.fill_between(x_axis_sort, 0, sort, color='C9')
     ax.axvline(x=0, color='C1')
@@ -149,28 +147,79 @@ def plot_loocv(data, print_file, figure_name):
     ax.grid(which='both')
     print_file.print_loocv_cdf(plt, figure_name)
 
+def plot_loocv_line(ours_diff, degree_diff, eigen_diff, betweenness_diff, closeness_diff, print_file, figure_name, fig_text):
+    fig, ax = plt.subplots(figsize=(12, 6))
+    x = [i for i in range(len(ours_diff))]
+
+    sorted_ours = sorted(ours_diff)
+    sorted_degree = sorted(degree_diff)
+    sorted_eigen = sorted(eigen_diff)
+    sorted_between = sorted(betweenness_diff)
+    sorted_close = sorted(closeness_diff)
+
+    combined = np.concatenate((sorted_ours, sorted_between, sorted_degree, sorted_eigen, sorted_close))
+
+    ax.plot(x, sorted_ours, color='C0', linewidth=3,label='Ours', marker='x')
+    ax.plot(x, sorted_degree, color='C1', linewidth=3, label='Degree')
+    ax.plot(x, sorted_eigen, color='C2', linewidth=3, label='Eigenvector')
+    ax.plot(x, sorted_between, color='C3', linewidth=3, label='Betweenness')
+    ax.plot(x, sorted_close, color='y', linewidth=3, label='Closeness')
+
+    # center on y=0
+    max_abs_y = max(abs(min(combined)), abs(max(combined)))  # maximum absolute y value
+
+    ax.set_ylim([-max_abs_y, max_abs_y])
+    ax.axhline(y=0, color='black', linestyle='--')
+
+    ax.legend()
+    ax.set_title('Difference between Mean Ranking by LOOCV and One-time Ranking of Various Methods', fontsize='xx-large')
+    ax.set_xlabel('Sorted Ranking of Nodes - {}'.format(fig_text), fontsize='x-large')
+    ax.set_ylabel('Difference Percentage', fontsize='x-large')
+    ax.grid(which='both')
+
+    print_file.print_loocv_cdf_multiple(plt, figure_name)
 
 def main(data_set, print_file):
     '''
     Main function for finding LOOCV of a graph
     '''
-    # ranking = {}
-    # start_time = time.time()
-    # Load graph
     multilayer_graph = MultilayerGraph(data_set)
 
-    ranking_dict = initialise_avg_ranking_dict(multilayer_graph.number_of_nodes)
-    print(ranking_dict)
+    our_ranking_dict = initialise_avg_ranking_dict(multilayer_graph.number_of_nodes)
+    degree_ranking_dict = initialise_avg_ranking_dict(multilayer_graph.number_of_nodes)
+    eigen_ranking_dict = initialise_avg_ranking_dict(multilayer_graph.number_of_nodes)
+    betweenness_ranking_dict = initialise_avg_ranking_dict(multilayer_graph.number_of_nodes)
+    closeness_ranking_dict = initialise_avg_ranking_dict(multilayer_graph.number_of_nodes)
 
-    # Initial rank
-    influence, max_level, num_cores = bfs(multilayer_graph, print_file, False)
+    # Initial rank of our method
+    influence, _, _ = bfs(multilayer_graph, print_file, False)
     initial_rank = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
-    update_avg_ranking_dict(initial_rank, ranking_dict)
+    update_avg_ranking_dict(initial_rank, our_ranking_dict)
+    initial_rank = copy.deepcopy(our_ranking_dict)
 
+    # Initial ranking of degree centrality
+    degree_influence = multilayer_graph.overlap_degree_rank()
+    degree_initial_rank = sorted(degree_influence.items(), key=lambda x: (-x[1], x[0]))
+    update_avg_ranking_dict(degree_initial_rank, degree_ranking_dict)
+    degree_initial_rank = copy.deepcopy(degree_ranking_dict)
 
-    initial_rank = copy.deepcopy(ranking_dict)
-    # print(initial_rank)
-    # print(ranking_dict)
+    # Initial ranking of Eigenvector centrality
+    eigen_influence = multilayer_graph.eigenvector_centrality()
+    eigen_initial_rank = sorted(eigen_influence.items(), key=lambda x: (-x[1], x[0]))
+    update_avg_ranking_dict(eigen_initial_rank, eigen_ranking_dict)
+    eigen_initial_rank = copy.deepcopy(eigen_ranking_dict)
+
+    # Initial ranking of betweenness 
+    betweenness_influence = multilayer_graph.betweenness_centrality()
+    betweenness_initial_rank = sorted(betweenness_influence.items(), key=lambda x: (-x[1], x[0]))
+    update_avg_ranking_dict(betweenness_initial_rank, betweenness_ranking_dict)
+    betweenness_initial_rank = copy.deepcopy(betweenness_ranking_dict)
+
+    # Initial Closeness ranking 
+    closeness_influence = multilayer_graph.closeness_centrality()
+    closeness_initial_rank = sorted(closeness_influence.items(), key=lambda x: (-x[1], x[0]))
+    update_avg_ranking_dict(closeness_initial_rank, closeness_ranking_dict)
+    closeness_initial_rank = copy.deepcopy(closeness_ranking_dict)
 
     # Calculate LOOCV for each node
     for i in range(multilayer_graph.number_of_nodes):
@@ -179,22 +228,46 @@ def main(data_set, print_file):
         # remove node with index i+1
         new_graph.remove_nodes([i+1])
         
+        # Recalculate our method LOOCV ranking
         influence, _, _ = bfs(new_graph, print_file, False)
         sorted_rank = sorted(influence.items(), key=lambda x: (-x[1], x[0]))
+        update_avg_ranking_dict(sorted_rank, our_ranking_dict)
 
-        update_avg_ranking_dict(sorted_rank, ranking_dict)
-        # print(influence)
+        # Recalculate degree method LOOCV ranking
+        degree_influence = new_graph.overlap_degree_rank()
+        sorted_degree_rank = sorted(degree_influence.items(), key=lambda x: (-x[1], x[0]))
+        update_avg_ranking_dict(sorted_degree_rank, degree_ranking_dict)
+
+        # Eigen
+        eigen_influence = new_graph.eigenvector_centrality()
+        eigen_sorted_rank = sorted(eigen_influence.items(), key=lambda x: (-x[1], x[0]))
+        update_avg_ranking_dict(eigen_sorted_rank, eigen_ranking_dict)
+
+        # Betweenness
+        betweenness_influence = new_graph.betweenness_centrality()
+        betweenness_sorted_rank = sorted(betweenness_influence.items(), key=lambda x: (-x[1], x[0]))
+        update_avg_ranking_dict(betweenness_sorted_rank, betweenness_ranking_dict)
+
+        # Closeness
+        closeness_influence = new_graph.closeness_centrality()
+        closeness_sorted_rank = sorted(closeness_influence.items(), key=lambda x: (-x[1], x[0]))
+        update_avg_ranking_dict(closeness_sorted_rank, closeness_ranking_dict)
 
 
-    avg_ranks = calculate_average_ranking(ranking_dict)
+    # Our method average rank
+    avg_ranks = calculate_average_ranking(our_ranking_dict)
 
-    print(avg_ranks)
+    # Degree correlation average rank
+    degree_avg_ranks = calculate_average_ranking(degree_ranking_dict)
+    eigen_avg_ranks = calculate_average_ranking(eigen_ranking_dict)
+    betweenness_avg_ranks = calculate_average_ranking(betweenness_ranking_dict)
+    closeness_avg_ranks = calculate_average_ranking(closeness_ranking_dict)
 
-    return avg_ranks, initial_rank
 
-
+    return (avg_ranks, degree_avg_ranks, eigen_avg_ranks, betweenness_avg_ranks, closeness_avg_ranks), \
+        (initial_rank, degree_initial_rank, eigen_initial_rank, betweenness_initial_rank, closeness_initial_rank)
+                                           
 def calculate_loocv_diff(avg_ranks, initial_rank):
-
     res = []
     size = len(initial_rank)
     for node in initial_rank.items():
@@ -202,29 +275,39 @@ def calculate_loocv_diff(avg_ranks, initial_rank):
         init_rank = node[1][0]
         avg_rank = avg_ranks[idx]
         diff = (init_rank - avg_rank) / size
-        print(idx, diff*100)
+        # print(idx, diff*100)
         res.append(diff*100)
 
     return res
 
 if __name__ == "__main__":
     # datasets = [sys.argv[1]]
-    datasets = ["aarhus"]
+    # datasets = ["asia_63", "northamerica_33", "southamerica_13", "europe_75", "celegan"]
+    datasets = ["northamerica_33"]
     for dataset in datasets:
         print_file = PrintFile(dataset)
-        avg_ranks, initial_ranks = main(dataset, print_file)
+        (avg_ranks, degree_avg_ranks, eigen_avg_ranks, betweenness_avg_ranks, closeness_avg_ranks), \
+            (initial_rank, degree_initial_rank, eigen_initial_rank, betweenness_initial_rank, closeness_initial_rank) \
+                = main(dataset, print_file)
 
-        res = calculate_loocv_diff(avg_ranks, initial_ranks)
+        '''
+        /home/z5260890/Resilience_of_Multiplex_Networks_against_Attacks/venv/bin/python /home/z5260890/Resilience_of_Multiplex_Networks_against_Attacks/Resilience_of_Multiplex_Networks_against_Attacks/loocv.py
+        '''
 
-        
+        ours_diff = calculate_loocv_diff(avg_ranks, initial_rank)
+        degree_diff = calculate_loocv_diff(degree_avg_ranks, degree_initial_rank)
+        eigen_diff = calculate_loocv_diff(eigen_avg_ranks, eigen_initial_rank)
+
+        print(eigen_diff)
+        print(eigen_avg_ranks)
+
+        betweenness_diff = calculate_loocv_diff(betweenness_avg_ranks, betweenness_initial_rank)
+        closeness_diff = calculate_loocv_diff(closeness_avg_ranks, closeness_initial_rank)
 
         # plot this shit, check format
-        # calculate difference
+        plot_loocv_area(ours_diff, print_file, dataset, "Airlines-NorthAmerica")        
 
-        # print(avg_ranks)
-        # print(initial_rank)
-        plot_loocv(res, print_file, dataset)        
-
+        plot_loocv_line(ours_diff, degree_diff, eigen_diff, betweenness_diff, closeness_diff, print_file, dataset,"Airlines-NorthAmerica")
 
 
     # start = 1

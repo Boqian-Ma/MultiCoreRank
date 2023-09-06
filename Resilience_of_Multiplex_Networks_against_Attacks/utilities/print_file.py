@@ -80,6 +80,17 @@ class PrintFile:
         with open(full_path, 'w+') as outfile:
             outfile.write(s)
 
+    def print_inner_most_core_map_random_attack(self, s, extension):
+        '''
+        Print a map of deepest level and percentage of removal
+        '''
+
+        full_path = dirname(getcwd()) + "/Resilience_of_Multiplex_Networks_against_Attacks/output/inner_most_cores_map_random_attack/{}_{}.txt".format(self.data_path, extension)
+        self._create_file(full_path)
+
+        with open(full_path, 'w+') as outfile:
+            outfile.write(s)
+
 
     def print_core(self, vector, k_core):
         # sort the nodes of the core
@@ -118,6 +129,13 @@ class PrintFile:
     
     def print_loocv_cdf(self, plt, figure_name):
         full_path = dirname(getcwd()) + "/Resilience_of_Multiplex_Networks_against_Attacks/output/figures/loocv/{}.png".format(figure_name)
+        self._create_file(full_path)
+
+        print(full_path)
+        plt.savefig(full_path, format="png")
+
+    def print_loocv_cdf_multiple(self, plt, figure_name):
+        full_path = dirname(getcwd()) + "/Resilience_of_Multiplex_Networks_against_Attacks/output/figures/loocv/{}_multiple.png".format(figure_name)
         self._create_file(full_path)
 
         print(full_path)

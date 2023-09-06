@@ -85,3 +85,8 @@ In terms of the "metric" of measuring the changes in network structures when top
     correlation after removal
     spearman rank correlation after removal 
 
+06/09/2024
+Experiments:
+1. LOOCV (done)
+2. Random Attack (looking into)
+

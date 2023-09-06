@@ -7,6 +7,7 @@ import argparse
 import errno
 import math
 from posixpath import dirname
+import random
 from resource import error
 import sys
 import time
@@ -62,15 +63,109 @@ def main(data_set, percentage, print_file):
 
     print(max_level)
 
-def func(multilayer_graph, dataset, removal_percentages, print_file):
+def random_attack(multilayer_graph, dataset, removal_percentages, print_file):
     '''
     
+    random attack
+    - get current set of nodes
+    - sample porportion
+    - remove nodes
+    calculate count
+
+    '''
+
+    # determine count
+
+    # start with index 0
+    # num_nodes_to_remove = int(math.floor((removal_percentage/100.0) * multilayer_graph.number_of_nodes))
+
+    # remove 1% at a time
+    num_nodes_to_remove = int(math.ceil(multilayer_graph.number_of_nodes/100.0))
+
+    # begin removal process
+    map = {}
+    # everytime, remove 1% of current nodes
+    for removal_percentage in removal_percentages:
+
+        current_nodes = list(multilayer_graph.get_nodes())
+        # sample a fixed number of nodes
+        try:
+            sampled_nodes = random.sample(current_nodes, num_nodes_to_remove)
+        except:
+            sampled_nodes = current_nodes
+
+        print("\nremoving {} nodes\n".format(num_nodes_to_remove))
+        # print("start {} end {}\n".format(cache_num_nodes_to_remove, num_nodes_to_remove))
+        print("remaining nodes {}".format(multilayer_graph.modified_number_of_nodes))
+        # edge case caused by math.floor
+        if num_nodes_to_remove == 0:
+            num_nodes_to_remove = 1
+
+        multilayer_graph.remove_nodes(sampled_nodes)
+
+        # find level
+        influence , max_level, number_of_cores = bfs(multilayer_graph, print_file, False)
+
+        # influences_sorted = sorted(influence.items(), key=lambda x: (-x[1], x[0]))        
+        # og_rank = [pair[0] for pair in influences_sorted]
+        # print("max level")
+        # print(max_level)
+
+        # add to map
+        map[removal_percentage] = (max_level , number_of_cores)
+
+        # stop when graph is empty
+        if multilayer_graph.modified_number_of_nodes == 0:
+            break
+
+    map = sorted(map.items(), key=lambda x: (x[0]))   
+    return map
+
+
+def new_influence_attack(multilayer_graph, dataset, removal_percentages, print_file):
+    # get node ranking initial
+    influences = get_influence_node_tuples(multilayer_graph, print_file)
+    influences_sorted = sorted(influences, key=lambda x: (-x[1], x[0]))   
+    # nodes with highest influence ranked first
+
+    # get a list of influence_node_rank
+    influence_node_rank = [node for (node, _) in influences_sorted]
+
+    map = {}
+    num_nodes_to_remove = int(math.ceil(multilayer_graph.number_of_nodes/100.0))
+
+    for removal_percentage in removal_percentages:
+        # Get current list of nodes
+        current_nodes = list(multilayer_graph.get_nodes())
+
+        # update influence_sorted nodes
+        for node in influence_node_rank:
+            if node not in current_nodes:
+                influence_node_rank.remove(node)
+
+        nodes_to_remove = influence_node_rank[:num_nodes_to_remove]
+        multilayer_graph.remove_nodes(nodes_to_remove)
+
+        influence , max_level, number_of_cores = bfs(multilayer_graph, print_file, False)
+
+        map[removal_percentage] = (max_level , number_of_cores)
+
+        # stop when graph is empty
+        if multilayer_graph.modified_number_of_nodes == 0:
+            break
+
+    map = sorted(map.items(), key=lambda x: (x[0]))   
+    return map
+
+def func(multilayer_graph, dataset, removal_percentages, print_file):
+    '''
+    Removal by rank
     '''
 
     # get full network
     multilayer_graph = MultilayerGraph(dataset)
 
-    # get node ranking
+    # get node ranking initial
     influences = get_influence_node_tuples(multilayer_graph, print_file)
     influences_sorted = sorted(influences, key=lambda x: (-x[1], x[0]))        
 
@@ -125,12 +220,7 @@ def func(multilayer_graph, dataset, removal_percentages, print_file):
         if multilayer_graph.modified_number_of_nodes == 0:
             break
 
-
     map = sorted(map.items(), key=lambda x: (x[0]))   
-
-    # map = dict((x, y) for x, y in map)
-
-    # od = OrderedDict(map)
 
     return map
 
@@ -147,9 +237,9 @@ if __name__ == "__main__":
     # datasets = ["moscowathletics2013_multiplex"]
     # datasets = ["northamerica_0_2_13_14_11", "southamerica_9_17_21_52", "celegans", "europe"]
 
-    # datasets = ["arxiv_netscience_multiplex_3_11"]
+    datasets = ["aarhus"]
 
-    datasets = [sys.argv[1]]
+    # datasets = [sys.argv[1]]
     start = 0
     finish = 100
     step = 1
@@ -160,14 +250,23 @@ if __name__ == "__main__":
 
     for dataset in datasets:
         print_file = PrintFile(dataset)
+
         multilayer_graph = MultilayerGraph(dataset)
+        map_influence_attack = new_influence_attack(multilayer_graph, dataset, removal_percentages, print_file)
+        influence_attack_output = build_string(map_influence_attack)
 
-        map = func(multilayer_graph, dataset, removal_percentages, print_file)
-        s = build_string(map)
 
-        file_extension = "{}_{}_{}".format(start, finish, step)
-        print_file.print_inner_most_core_map_fast(s, file_extension)
-        # print(map)
+        multilayer_graph =  MultilayerGraph(dataset)
+        map_random_attack = random_attack(multilayer_graph, dataset, removal_percentages, print_file)
+        random_attack_output =  build_string(map_random_attack)
+
+        influence_file_extension = "{}_{}_{}".format(start, finish, step)
+        random_file_extension = "{}_{}_{}_random".format(start, finish, step)
+
+        print_file.print_inner_most_core_map_fast(influence_attack_output, influence_file_extension)
+        print_file.print_inner_most_core_map_random_attack(random_attack_output, random_file_extension)
+
+        print(map)
         # Save map
 
     # datasets = ["celegans"]
