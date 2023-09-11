@@ -21,8 +21,10 @@ job.*
 
 jobs
 
-katana*
-
 .pytest*
 
-katana*
+*katana*
+
+*restech*
+
+*ignore*
